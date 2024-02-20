@@ -13,6 +13,7 @@ import pytz
 import time
 import math as m
 from Noise import Noise
+from gps_test.coordinates import CoordinatesConverter
 
 try:
     from smbus2 import SMBus
@@ -115,6 +116,42 @@ def get_cpu_temperature():
         
 # Compensation factor for temperature
 comp_factor = 2.8
+
+# read the coordinates from a temp file 
+def get_coordinates(filename):
+    try:
+        with open(filename, 'r') as file:
+            # Leggi il contenuto del file
+            content = file.read()
+            stringa = "45.997073312 12.290820004"
+            coordinate = stringa.split()  # Dividi la stringa in base agli spazi
+
+            # Assegna i valori alle variabili
+            latitude = float(coordinate[0])
+            longitude = float(coordinate[1])
+
+            print("Latitude:", latitude)
+            print("Longitude:", longitude)
+
+    except FileNotFoundError:
+        print("Errore: Il file non esiste.")
+    except PermissionError:
+        print("Errore: Non hai il permesso di accedere al file.")
+    except Exception as e:
+        print(f"Errore generico: {e}")
+
+    
+
+# create the converter object
+converter = CoordinatesConverter()
+
+address = converter.coordinates_to_address()  
+if address:
+    print("L'indirizzo è:", address)
+else:
+    print("Conversione delle coordinate non riuscita.")
+    exit()
+
 
 # Main loop to read data, display, and send to Database
 while True:
