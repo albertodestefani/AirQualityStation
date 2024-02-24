@@ -117,41 +117,37 @@ def get_cpu_temperature():
 # Compensation factor for temperature
 comp_factor = 2.8
 
-# read the coordinates from a temp file 
-def get_coordinates(filename):
-    try:
-        with open(filename, 'r') as file:
-            # Leggi il contenuto del file
-            content = file.read()
-            stringa = "45.997073312 12.290820004"
-            coordinate = stringa.split()  # Dividi la stringa in base agli spazi
+# read the coordinates from the temp file 
+filename = ""
+try:
+    with open(filename, 'r') as file:
+        content = file.read()
+        coordinates = content.split()  # Split the string
 
-            # Assegna i valori alle variabili
-            latitude = float(coordinate[0])
-            longitude = float(coordinate[1])
+        latitude = float(coordinates[0])
+        longitude = float(coordinates[1])
 
-            print("Latitude:", latitude)
-            print("Longitude:", longitude)
+        print("Latitude:", latitude)
+        print("Longitude:", longitude)
 
-    except FileNotFoundError:
-        print("Errore: Il file non esiste.")
-    except PermissionError:
-        print("Errore: Non hai il permesso di accedere al file.")
-    except Exception as e:
-        print(f"Errore generico: {e}")
+except FileNotFoundError:
+    print("Error: file not exists")
+except PermissionError:
+    print("Error: No permission on the file")
+except Exception as e:
+    print(f"Error: {e}")
 
     
-
-# create the converter object
+# create the converter object to convert coordinates to an address 
 converter = CoordinatesConverter()
 
-address = converter.coordinates_to_address()  
-if address:
-    print("L'indirizzo è:", address)
+# get the address 
+location = converter.coordinates_to_address()  
+if location:
+    print("Address:", location)
 else:
-    print("Conversione delle coordinate non riuscita.")
+    print("Coordinates conversion didn't work")
     exit()
-
 
 # Main loop to read data, display, and send to Database
 while True:
@@ -183,6 +179,9 @@ while True:
         # For hour with *:00:00 delete %M and %S 
         formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
         logging.info(values)
+        
+        # location = get_location() 
+
         # Create the query for the database 
         sql = "INSERT INTO readings (date_time, pm1, pm25, pm10, temperature, humidity, air_pressure, no2, co, nh3, dBA) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         val = (formatted_date, values['PM1'], values['PM25'], values['PM10'], values['temperature'], values['humidity'], values['air_pressure'], values['Oxidising'], values['Reducing'], values['NH3'], values['dBA'])
