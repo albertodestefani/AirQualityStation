@@ -150,7 +150,7 @@ else:
     exit()
 
 # Apri il file JSON e carica i dati di configurazione database
-with open('conn/connection_data.json', 'r') as json_file:
+with open('../conn/connection_data.json', 'r') as json_file:
     data = json.load(json_file)
 
 # Accesso ai dati estratti
