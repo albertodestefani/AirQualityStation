@@ -12,9 +12,9 @@ import datetime
 import pytz
 import time
 import math as m
+import json
 from Noise import Noise
 from gps_test.coordinates import CoordinatesConverter
-
 try:
     from smbus2 import SMBus
 except ImportError:
@@ -149,16 +149,27 @@ else:
     print("Coordinates conversion didn't work")
     exit()
 
+# Apri il file JSON e carica i dati di configurazione database
+with open('conn/connection_data.json', 'r') as json_file:
+    data = json.load(json_file)
+
+# Accesso ai dati estratti
+conn_user = data['user']
+conn_password = data['password']
+conn_host = data['host']
+conn_port = data['port']
+conn_database = data['database']
+
 # Main loop to read data, display, and send to Database
 while True:
     try:
         # Create connection to Database
         mydb = mysql.connector.connect(
-            user="MS12486_aqs",
-            password="Arianetta!_23",
-            host="hostingmysql310.register.it",
-            port=3306,
-            database="airqualitystation",
+            user=conn_user,
+            password=conn_password,
+            host=conn_host,
+            port=conn_port,
+            database=conn_database,
             #use_pure=True
         )
         
