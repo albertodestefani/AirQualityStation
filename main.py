@@ -15,6 +15,7 @@ import math as m
 import json
 from Noise import Noise
 from gps_test.coordinates import CoordinatesConverter
+
 try:
     from smbus2 import SMBus
 except ImportError:
@@ -142,7 +143,7 @@ except Exception as e:
 converter = CoordinatesConverter()
 
 # get the address 
-location = converter.coordinates_to_address()  
+location = converter.coordinates_to_address(latitude, longitude)  
 if location:
     print("Address:", location)
 else:
