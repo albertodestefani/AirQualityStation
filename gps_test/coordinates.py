@@ -1,7 +1,7 @@
 # Questa classe permette di trasformare le coordinate gps in indirizzo da poter 
 # salvare nel db, utiliza un servizio chiamato "nominatim.openstreetmap.org",
 # il programma manda una request HTTP e l'host ritorna dei dati in formato json
-# il programma va poi a fare una cernita dei dati per costruire una stringa sensata 
+# il programma va poi a fare una cernita dei dati per costruire una stringa 
 
 # attualmente la funzione coordinates_to_address non è utilizzata perchè non permette di costruire la stringa a piacimento
 
