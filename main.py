@@ -143,7 +143,7 @@ except Exception as e:
 converter = CoordinatesConverter()
 
 # get the address 
-location = converter.coordinates_to_address(latitude, longitude)  
+location = converter.reverse_geocode(latitude, longitude)  
 if location:
     print("Address:", location)
 else:
