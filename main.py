@@ -119,9 +119,9 @@ def get_cpu_temperature():
 comp_factor = 2.8
 
 # read the coordinates from the temp file 
-filename = "coordinates.txt"
+filepath = "../temp/coordinates.txt"
 try:
-    with open(filename, 'r') as file:
+    with open(filepath, 'r') as file:
         content = file.read()
         coordinates = content.split()  # Split the string
 
