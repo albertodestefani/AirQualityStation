@@ -36,7 +36,6 @@ Press Ctrl+C to exit
 
 class Noise():
     def __init__(self, spl_ref_level, log_sound_data, debug_recording_capture, sample_rate=48000, duration=0.25):
-        print("ghe sen")
         self.sample_counter = 0
         self.previous_sample_count = 0
         self.spl_ref_level = spl_ref_level
@@ -48,7 +47,6 @@ class Noise():
         self.max_spl_datetime = None
         self.recording = []
         self.stream = sd.InputStream(samplerate=self.sample_rate, channels=1, blocksize = 12000, device = "dmic_sv", callback=self.process_frames)
-        print("OK")
         
 
         

@@ -15,6 +15,7 @@ import math as m
 import json
 from Noise import Noise
 from gps_test.coordinates import CoordinatesConverter
+from db_location import DB_Location
 
 try:
     from smbus2 import SMBus
@@ -66,7 +67,6 @@ def read_values():
     values = {}
     
     noise = Noise(spl_ref_level, log_sound_data, debug_recording_capture)
-    print("oggetto noise creato")
       
     # Get cpu temperature and external temperature
     cpu_temp = get_cpu_temperature()
@@ -90,15 +90,9 @@ def read_values():
         #Get supported pollution type values
         pm_values = pms5003.read()
         values["PM1"] = int(pm_values.pm_ug_per_m3(1))
-        #values["PM1"] = 1
         values["PM25"] = int(pm_values.pm_ug_per_m3(2.5))
-        #values["PM25"] = 25
         values["PM10"] = int(pm_values.pm_ug_per_m3(10))
-        #values["PM10"] = 10
     except(ReadTimeoutError, ChecksumMismatchError):
-        #values["PM1"] = 1
-        #values["PM25"] = 25
-        #values["PM10"] = 10
         logging.info("Failed to read PMS5003. Reseting and retrying.")
         pms5003.reset()
         #pm_values = pms5003.read()
@@ -107,6 +101,11 @@ def read_values():
         #values["PM10"] = int(pm_values.pm_ug_per_m3(10))
     return values
 
+# Apri il file JSON e carica i dati di configurazione database
+def get_connection_data():
+    with open('../conn/connection_data.json', 'r') as json_file:
+        data = json.load(json_file)
+        return data
 
 # cretae the function to get the temperature of the CPU for compensation
 def get_cpu_temperature():
@@ -130,7 +129,6 @@ try:
 
         print("Latitude:", latitude)
         print("Longitude:", longitude)
-
 except FileNotFoundError:
     print("Error: file not exists")
 except PermissionError:
@@ -139,38 +137,20 @@ except Exception as e:
     print(f"Error: {e}")
 
     
-# create the converter object to convert coordinates to an address 
+# create the converter object to convert coordinates to address 
 converter = CoordinatesConverter()
-
-# get the address 
-location = converter.reverse_geocode(latitude, longitude)  
-if location:
-    print("Address:", location)
-else:
-    print("Coordinates conversion didn't work")
-    exit()
-
-# Apri il file JSON e carica i dati di configurazione database
-with open('../conn/connection_data.json', 'r') as json_file:
-    data = json.load(json_file)
-
-# Accesso ai dati estratti
-conn_user = data['user']
-conn_password = data['password']
-conn_host = data['host']
-conn_port = data['port']
-conn_database = data['database']
 
 # Main loop to read data, display, and send to Database
 while True:
     try:
+        data = get_connection_data()
         # Create connection to Database
         mydb = mysql.connector.connect(
-            user=conn_user,
-            password=conn_password,
-            host=conn_host,
-            port=conn_port,
-            database=conn_database,
+            user = data['user'],
+            password = data['host'],
+            host = data['host'],
+            port = data['port'],
+            database = data['database'],
             #use_pure=True
         )
         
@@ -180,11 +160,28 @@ while True:
 
     # Create a cursor to write on database
     mycursor = mydb.cursor()
-    i=0
-    
+    # i=0
+
+    try:
+        # get the address 
+        location = converter.reverse_geocode(latitude, longitude)  
+        if location is None:
+            raise ValueError("Coordinates conversion didn't work")
+        else:
+            # stampa stringa in quanto location è una tupla
+            print("Address:", converter.get_string())
+    except ValueError as e:
+        print(e)
+        exit()
+
+    db_location = DB_Location()
+    id = db_location.getId(location)
+
     # SQL query creation and execution
     try:
-        logging.warning(bme280.get_pressure())
+        # riga commentata in seguito
+        # logging.warning(bme280.get_pressure())
+
         values = read_values()
         # Get the timezone of our area
         now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
@@ -192,8 +189,8 @@ while True:
         formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
         logging.info(values)
         # Create the query for the database 
-        sql = "INSERT INTO readings (date_time, pm1, pm25, pm10, temperature, humidity, air_pressure, no2, co, nh3, dBA) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (formatted_date, values['PM1'], values['PM25'], values['PM10'], values['temperature'], values['humidity'], values['air_pressure'], values['Oxidising'], values['Reducing'], values['NH3'], values['dBA'])
+        sql = "INSERT INTO readings (date_time, pm1, pm25, pm10, temperature, humidity, air_pressure, no2, co, nh3, dBA, location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %i)"
+        val = (formatted_date, values['PM1'], values['PM25'], values['PM10'], values['temperature'], values['humidity'], values['air_pressure'], values['Oxidising'], values['Reducing'], values['NH3'], values['dBA'], id)
         # Execute the SQL query
         mycursor.execute(sql, val)
         #Confirm the changes in the database are made correctly
@@ -208,4 +205,4 @@ while True:
     mydb.close()
 
     # Wait the time for the next detection
-    time.sleep(60)
+    time.sleep(10)

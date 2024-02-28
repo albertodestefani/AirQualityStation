@@ -29,17 +29,34 @@ class CoordinatesConverter:
             return None
         
     # usiamo questo per avere una gestione completa della response
+    # ritorna una tupla contenente dati essenziali
     def reverse_geocode(self, latitude, longitude):
         try:
             url = f"https://nominatim.openstreetmap.org/reverse?lat={latitude}&lon={longitude}&format=json&accept-language=it&addressdetails=1"
             response = requests.get(url)
             data = response.json()
+            
             address = data['address']
-            location = address['road'] + ', ' + address['town'] + ', ' + address['county'] + ', ' + address['state'] + ', ' + address['country']
-            return location
+
+            # stringa da poter stampare come check error
+            self.location = address['road'] + ', ' + address['town'] + ', ' + address['county'] + ', ' + address['state'] + ', ' + address['country']
+            
+            tupla = [
+                address['road'], 
+                address['town'], 
+                address['county'], 
+                address['state'], 
+                address['country']
+            ]
+
+            return tupla
         except Exception as e:
             print("error")
             return None
+        
+    def get_string(self):
+        return self.location
+        
 
 
 # test
