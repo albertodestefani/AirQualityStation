@@ -37,7 +37,7 @@ class DB_Location:
             sys.exit(1)
 
         cursor = mydb.cursor()
-        query = "SELECT * FROM locations WHERE road_address = ? AND city = ? AND province = ? AND region = ? AND country = ?"
+        query = "SELECT * FROM locations WHERE (road_address = %s) AND (city = %s) AND (province = %s) AND (region = %s) AND (country = %s)"
         cursor.execute(query, val)
         row = cursor.fetchrow()
 
