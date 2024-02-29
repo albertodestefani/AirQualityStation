@@ -15,6 +15,14 @@ class DB_Location:
             self.data = json.load(json_file)
         
     def getId(self, location):
+        val = (
+            location['road'], 
+            location['town'], 
+            location['county'], 
+            location['state'], 
+            location['country']
+        )
+
         try:
             # Create connection to Database
             mydb = mysql.connector.connect(
@@ -29,35 +37,27 @@ class DB_Location:
             sys.exit(1)
 
         cursor = mydb.cursor()
-        cursor.execute("SELECT * FROM locations")
-        rows = cursor.fetchall()
+        query = "SELECT * FROM locations WHERE road_address = ? AND city = ? AND province = ? AND region = ? AND country = ?"
+        cursor.execute(query, val)
+        row = cursor.fetchrow()
 
-        id = None
-
-        for row in rows:
-            # array temporaneo senza id per verificare uguaglianza
-            temp_row = row[1:]
-
-            if np.array_equal(temp_row, location):
-                id = row[0]
-                print("ID location: ", id)
-
-        if id is None:
+        if row is not None:
+            id = row['id']
+            print("ID location: ", id)
+        else:
             print("Location non presente nel db, creazione di una nuova istanza ...")
 
             sql = "INSERT INTO locations (road_address, city, province, region, country) VALUES (%s, %s, %s, %s, %s)"
-            val = (
-                location['road'], 
-                location['town'], 
-                location['county'], 
-                location['state'], 
-                location['country']
-            )
 
             cursor.execute(sql, val)
             mydb.commit()
     
             # assegna id successivo
+            """""
+            nel caso in cui venga scelto di realizzare nuove stazioni che lavorano in contemporanea
+            questa funzione è da riadattare perche potrebbero essere eseguite più query nello stesso momento
+            con risultante di un lastrowid inserito errato
+            """""
             id = cursor.lastrowid
             print("nuovo id: ", id)
 
