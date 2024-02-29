@@ -39,12 +39,12 @@ class DB_Location:
         cursor = mydb.cursor()
         query = "SELECT * FROM locations WHERE (road_address = %s) AND (city = %s) AND (province = %s) AND (region = %s) AND (country = %s)"
         cursor.execute(query, val)
-        row = cursor.fetchrow()
-
-        if row is not None:
+        
+        try:
+            row = cursor.fetchrow()
             id = row['id']
             print("ID location: ", id)
-        else:
+        except Exception as e:
             print("Location non presente nel db, creazione di una nuova istanza ...")
 
             sql = "INSERT INTO locations (road_address, city, province, region, country) VALUES (%s, %s, %s, %s, %s)"
