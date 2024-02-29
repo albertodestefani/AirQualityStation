@@ -58,7 +58,8 @@ class DB_Location:
             mydb.commit()
     
             # assegna id successivo
-            id = len(rows) + 1
+            id = cursor.lastrowid
+            print("nuovo id: ", id)
 
         # Close cursor and databese connection for internet saving
         cursor.close()
