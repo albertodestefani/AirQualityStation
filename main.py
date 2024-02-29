@@ -140,6 +140,20 @@ except Exception as e:
 # create the converter object to convert coordinates to address 
 converter = CoordinatesConverter()
 db_location = DB_Location()
+
+try:
+    # get the address 
+    location = converter.reverse_geocode(latitude, longitude)  
+    if location is None:
+        raise ValueError("Coordinates conversion didn't work")
+    else:
+        # stampa stringa in quanto location è una tupla
+        print("Address:", converter.get_string())
+        print(location)
+except ValueError as e:
+    print(e)
+    exit()
+    
 id = int( db_location.getId(location) )
 
 # Main loop to read data, display, and send to Database
@@ -163,19 +177,6 @@ while True:
     # Create a cursor to write on database
     mycursor = mydb.cursor()
     # i=0
-
-    try:
-        # get the address 
-        location = converter.reverse_geocode(latitude, longitude)  
-        if location is None:
-            raise ValueError("Coordinates conversion didn't work")
-        else:
-            # stampa stringa in quanto location è una tupla
-            print("Address:", converter.get_string())
-            print(location)
-    except ValueError as e:
-        print(e)
-        exit()
 
     # SQL query creation and execution
     try:
