@@ -153,7 +153,7 @@ try:
 except ValueError as e:
     print(e)
     exit()
-    
+
 id = int( db_location.getId(location) )
 
 # Main loop to read data, display, and send to Database
@@ -190,7 +190,7 @@ while True:
         formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
         logging.info(values)
         # Create the query for the database 
-        sql = "INSERT INTO readings (date_time, pm1, pm25, pm10, temperature, humidity, air_pressure, no2, co, nh3, dBA, id_location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %i)"
+        sql = "INSERT INTO readings (date_time, pm1, pm25, pm10, temperature, humidity, air_pressure, no2, co, nh3, dBA, id_location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         val = (formatted_date, values['PM1'], values['PM25'], values['PM10'], values['temperature'], values['humidity'], values['air_pressure'], values['Oxidising'], values['Reducing'], values['NH3'], values['dBA'], id)
         # Execute the SQL query
         mycursor.execute(sql, val)
