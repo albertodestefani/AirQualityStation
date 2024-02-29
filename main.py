@@ -139,6 +139,8 @@ except Exception as e:
     
 # create the converter object to convert coordinates to address 
 converter = CoordinatesConverter()
+db_location = DB_Location()
+id = int( db_location.getId(location) )
 
 # Main loop to read data, display, and send to Database
 while True:
@@ -175,9 +177,6 @@ while True:
         print(e)
         exit()
 
-    db_location = DB_Location()
-    id = db_location.getId(location)
-
     # SQL query creation and execution
     try:
         # riga commentata in seguito
@@ -206,4 +205,4 @@ while True:
     mydb.close()
 
     # Wait the time for the next detection
-    time.sleep(10)
+    time.sleep(60)
