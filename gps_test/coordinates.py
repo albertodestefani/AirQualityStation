@@ -48,6 +48,7 @@ class CoordinatesConverter:
                 address['state'], 
                 address['country']
             ]
+            
 
             return tupla
         except Exception as e:

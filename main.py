@@ -170,6 +170,7 @@ while True:
         else:
             # stampa stringa in quanto location è una tupla
             print("Address:", converter.get_string())
+            print(location)
     except ValueError as e:
         print(e)
         exit()
