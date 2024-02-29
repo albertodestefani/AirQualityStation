@@ -6,7 +6,6 @@ import json
 import mariadb
 import mysql.connector
 import sys
-import numpy as np
 
 
 class DB_Location:
@@ -33,7 +32,7 @@ class DB_Location:
                 database = self.data['database'],
             )
         except mariadb.Error as e:
-            print("fError connecting to MariaDB Platform: {e}")
+            print(f"Error connecting to MariaDB Platform: {e}")
             sys.exit(1)
 
         cursor = mydb.cursor()
@@ -42,8 +41,9 @@ class DB_Location:
         
         try:
             row = cursor.fetchone()
+            
             print(row)
-            id = row['id']
+            id = row[0]
             print("ID location: ", id)
         except Exception as e:
             print("Location non presente nel db, creazione di una nuova istanza ...")
@@ -51,8 +51,7 @@ class DB_Location:
             sql = "INSERT INTO locations (road_address, city, province, region, country) VALUES (%s, %s, %s, %s, %s)"
 
             cursor.execute(sql, val)
-            mydb.commit()
-    
+
             # assegna id successivo
             """""
             nel caso in cui venga scelto di realizzare nuove stazioni che lavorano in contemporanea
@@ -62,10 +61,19 @@ class DB_Location:
             id = cursor.lastrowid
             print("nuovo id: ", id)
 
-        # Close cursor and databese connection for internet saving
-        cursor.close()
+        # Close databese connection for internet saving
         mydb.close()
 
         return id
 
     
+# db = DB_Location()
+# location = {
+#     "road": "Via Piai", 
+#     "town": "Vittorio Veneto", 
+#     "county": "Treviso", 
+#     "state": "Veneto", 
+#     "country": "Italia"
+# }
+# id = db.getId(location)
+# print(id)
