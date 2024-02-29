@@ -19,7 +19,7 @@ class DB_Location:
             # Create connection to Database
             mydb = mysql.connector.connect(
                 user = self.data['user'],
-                password = self.data['host'],
+                password = self.data['password'],
                 host = self.data['host'],
                 port = self.data['port'],
                 database = self.data['database'],
