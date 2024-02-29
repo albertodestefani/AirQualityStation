@@ -41,7 +41,7 @@ class DB_Location:
         cursor.execute(query, val)
         
         try:
-            row = cursor.fetchrow()
+            row = cursor.fetchone()
             print(row)
             id = row['id']
             print("ID location: ", id)
