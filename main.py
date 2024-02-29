@@ -147,7 +147,7 @@ while True:
         # Create connection to Database
         mydb = mysql.connector.connect(
             user = data['user'],
-            password = data['host'],
+            password = data['password'],
             host = data['host'],
             port = data['port'],
             database = data['database'],
