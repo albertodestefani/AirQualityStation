@@ -42,6 +42,7 @@ class DB_Location:
         
         try:
             row = cursor.fetchrow()
+            print(row)
             id = row['id']
             print("ID location: ", id)
         except Exception as e:
