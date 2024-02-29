@@ -41,13 +41,13 @@ class CoordinatesConverter:
             # stringa da poter stampare come check error
             self.location = address['road'] + ', ' + address['town'] + ', ' + address['county'] + ', ' + address['state'] + ', ' + address['country']
             
-            tupla = [
-                address['road'], 
-                address['town'], 
-                address['county'], 
-                address['state'], 
-                address['country']
-            ]
+            tupla = {
+                "road": address['road'], 
+                "town": address['town'], 
+                "county": address['county'], 
+                "state": address['state'], 
+                "country": address['country']
+            }
             
 
             return tupla
