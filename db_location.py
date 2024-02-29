@@ -45,7 +45,7 @@ class DB_Location:
         if id is None:
             print("Location non presente nel db, creazione di una nuova istanza ...")
 
-            sql = "INSERT INTO location (road_address, city, province, region, country) VALUES (%s, %s, %s, %s, %s)"
+            sql = "INSERT INTO locations (road_address, city, province, region, country) VALUES (%s, %s, %s, %s, %s)"
             val = (
                 location['road'], 
                 location['town'], 
