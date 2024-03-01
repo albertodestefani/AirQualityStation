@@ -86,9 +86,7 @@ def read_values():
     values["NH3"] = gas.read_nh3()
     values["dBA"] = int(noise.spl())
 
-    pm_sum_values = 0 + values["PM1"] + values["PM25"] + values["PM10"]
-    print("Sum of pm values: ", pm_sum_values)
-    
+    pm_sum_values = 0
     while pm_sum_values == 0:
         print("Reading pm values ...")
         try:
@@ -104,6 +102,23 @@ def read_values():
             #values["PM1"] = int(pm_values.pm_ug_per_m3(1))
             #values["PM25"] = int(pm_values.pm_ug_per_m3(2.5))
             #values["PM10"] = int(pm_values.pm_ug_per_m3(10))
+
+        pm_sum_values = values["PM1"] + values["PM25"] + values["PM10"]
+        print("Sum of pm values: ", pm_sum_values)
+    
+    try:
+        # get the address 
+        location = converter.reverse_geocode(latitude, longitude)  
+        if location is None:
+            raise ValueError("Coordinates conversion didn't work")
+        
+    except ValueError as e:
+        logging.warning(e)
+        exit()
+
+    values['id'] = int( db_location.getId(location) )
+
+
 
     return values
 
@@ -145,19 +160,9 @@ except Exception as e:
     
 # create the converter object to convert coordinates to address 
 converter = CoordinatesConverter()
+
+# create the db_location object to find the location id in the database
 db_location = DB_Location()
-
-try:
-    # get the address 
-    location = converter.reverse_geocode(latitude, longitude)  
-    if location is None:
-        raise ValueError("Coordinates conversion didn't work")
-    
-except ValueError as e:
-    logging.warning(e)
-    exit()
-
-id = int( db_location.getId(location) )
 
 # Main loop to read data, display, and send to Database
 while True:
@@ -183,9 +188,7 @@ while True:
 
     # SQL query creation and execution
     try:
-        # riga commentata in seguito
-        # logging.warning(bme280.get_pressure())
-
+        logging.warning(bme280.get_pressure())
         values = read_values()
         # Get the timezone of our area
         now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
@@ -194,7 +197,7 @@ while True:
         logging.info(values)
         # Create the query for the database 
         sql = "INSERT INTO readings (date_time, pm1, pm25, pm10, temperature, humidity, air_pressure, no2, co, nh3, dBA, id_location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (formatted_date, values['PM1'], values['PM25'], values['PM10'], values['temperature'], values['humidity'], values['air_pressure'], values['Oxidising'], values['Reducing'], values['NH3'], values['dBA'], id)
+        val = (formatted_date, values['PM1'], values['PM25'], values['PM10'], values['temperature'], values['humidity'], values['air_pressure'], values['Oxidising'], values['Reducing'], values['NH3'], values['dBA'], values['id'])
         # Execute the SQL query
         mycursor.execute(sql, val)
         #Confirm the changes in the database are made correctly
