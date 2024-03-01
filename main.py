@@ -89,7 +89,6 @@ def read_values():
     values["NH3"] = gas.read_nh3()
     values["dBA"] = int(noise.spl())
 
-    print("Reading pm values ...")
     try:
         #Get supported pollution type values
         pm_values = pms5003.read()
