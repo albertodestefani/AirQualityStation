@@ -16,6 +16,10 @@ from Noise import Noise
 from gps_test.coordinates import CoordinatesConverter
 from db_location import DB_Location
 
+# Progressive bar
+from time import sleep
+from tqdm import tqdm
+
 try:
     from smbus2 import SMBus
 except ImportError:
@@ -178,7 +182,7 @@ while True:
         logging.warning(bme280.get_pressure())
         
         # Trying to read the values for 5 times to get more accurate values
-        for i in range(0, 5):
+        for i in tqdm(range(5)):
             values = read_values()
             time.sleep(5)
             logging.info(values)
