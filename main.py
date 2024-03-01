@@ -85,20 +85,26 @@ def read_values():
     values["Oxidising"] = gas.read_oxidising()
     values["NH3"] = gas.read_nh3()
     values["dBA"] = int(noise.spl())
+
+    pm_sum_values = 0 + values["PM1"] + values["PM25"] + values["PM10"]
+    print("Sum of pm values: ", pm_sum_values)
     
-    try:
-        #Get supported pollution type values
-        pm_values = pms5003.read()
-        values["PM1"] = int(pm_values.pm_ug_per_m3(1))
-        values["PM25"] = int(pm_values.pm_ug_per_m3(2.5))
-        values["PM10"] = int(pm_values.pm_ug_per_m3(10))
-    except(ReadTimeoutError, ChecksumMismatchError):
-        logging.info("Failed to read PMS5003. Reseting and retrying.")
-        pms5003.reset()
-        #pm_values = pms5003.read()
-        #values["PM1"] = int(pm_values.pm_ug_per_m3(1))
-        #values["PM25"] = int(pm_values.pm_ug_per_m3(2.5))
-        #values["PM10"] = int(pm_values.pm_ug_per_m3(10))
+    while pm_sum_values == 0:
+        print("Reading pm values ...")
+        try:
+            #Get supported pollution type values
+            pm_values = pms5003.read()
+            values["PM1"] = int(pm_values.pm_ug_per_m3(1))
+            values["PM25"] = int(pm_values.pm_ug_per_m3(2.5))
+            values["PM10"] = int(pm_values.pm_ug_per_m3(10))
+        except(ReadTimeoutError, ChecksumMismatchError):
+            logging.info("Failed to read PMS5003. Reseting and retrying.")
+            pms5003.reset()
+            #pm_values = pms5003.read()
+            #values["PM1"] = int(pm_values.pm_ug_per_m3(1))
+            #values["PM25"] = int(pm_values.pm_ug_per_m3(2.5))
+            #values["PM10"] = int(pm_values.pm_ug_per_m3(10))
+
     return values
 
 # Apri il file JSON e carica i dati di configurazione database
@@ -127,14 +133,14 @@ try:
         latitude = float(coordinates[0])
         longitude = float(coordinates[1])
 
-        print("Latitude:", latitude)
-        print("Longitude:", longitude)
+        # print("Latitude:", latitude)
+        # print("Longitude:", longitude)
 except FileNotFoundError:
-    print("Error: file not exists")
+    logging.warning("Error: file not exists")
 except PermissionError:
-    print("Error: No permission on the file")
+    logging.warning("Error: No permission on the file")
 except Exception as e:
-    print(f"Error: {e}")
+    logging.warning(f"Error: {e}")
 
     
 # create the converter object to convert coordinates to address 
@@ -146,12 +152,9 @@ try:
     location = converter.reverse_geocode(latitude, longitude)  
     if location is None:
         raise ValueError("Coordinates conversion didn't work")
-    else:
-        # stampa stringa in quanto location è una tupla
-        print("Address:", converter.get_string())
-        print(location)
+    
 except ValueError as e:
-    print(e)
+    logging.warning(e)
     exit()
 
 id = int( db_location.getId(location) )
@@ -171,7 +174,7 @@ while True:
         )
         
     except mariadb.Error as e:
-        print("fError connecting to MariaDB Platform: {e}")
+        logging.warning(f"Error connecting to MariaDB Platform: {e}")
         sys.exit(1)
 
     # Create a cursor to write on database
@@ -196,7 +199,7 @@ while True:
         mycursor.execute(sql, val)
         #Confirm the changes in the database are made correctly
         mydb.commit()
-        print("query fatta")
+        print("Query done")
     except Exception as e:
         logging.warning('Main Loop Exception: {}'.format(e))
         
