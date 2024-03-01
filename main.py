@@ -185,7 +185,7 @@ while True:
         for i in tqdm(range(5)):
             values = read_values()
             time.sleep(5)
-            logging.info(values)
+            # logging.info(values)
 
         # Get the location id
         values['id'] = int( db_location.getId(location) )
