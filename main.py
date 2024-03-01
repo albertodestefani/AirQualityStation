@@ -1,5 +1,4 @@
 # Module Imports
-
 import requests
 import ST7735
 from bme280 import BME280
@@ -86,39 +85,20 @@ def read_values():
     values["NH3"] = gas.read_nh3()
     values["dBA"] = int(noise.spl())
 
-    pm_sum_values = 0
-    while pm_sum_values == 0:
-        print("Reading pm values ...")
-        try:
-            #Get supported pollution type values
-            pm_values = pms5003.read()
-            values["PM1"] = int(pm_values.pm_ug_per_m3(1))
-            values["PM25"] = int(pm_values.pm_ug_per_m3(2.5))
-            values["PM10"] = int(pm_values.pm_ug_per_m3(10))
-        except(ReadTimeoutError, ChecksumMismatchError):
-            logging.info("Failed to read PMS5003. Reseting and retrying.")
-            pms5003.reset()
-            #pm_values = pms5003.read()
-            #values["PM1"] = int(pm_values.pm_ug_per_m3(1))
-            #values["PM25"] = int(pm_values.pm_ug_per_m3(2.5))
-            #values["PM10"] = int(pm_values.pm_ug_per_m3(10))
-
-        pm_sum_values = values["PM1"] + values["PM25"] + values["PM10"]
-        print("Sum of pm values: ", pm_sum_values)
-    
+    print("Reading pm values ...")
     try:
-        # get the address 
-        location = converter.reverse_geocode(latitude, longitude)  
-        if location is None:
-            raise ValueError("Coordinates conversion didn't work")
-        
-    except ValueError as e:
-        logging.warning(e)
-        exit()
-
-    values['id'] = int( db_location.getId(location) )
-
-
+        #Get supported pollution type values
+        pm_values = pms5003.read()
+        values["PM1"] = int(pm_values.pm_ug_per_m3(1))
+        values["PM25"] = int(pm_values.pm_ug_per_m3(2.5))
+        values["PM10"] = int(pm_values.pm_ug_per_m3(10))
+    except(ReadTimeoutError, ChecksumMismatchError):
+        logging.info("Failed to read PMS5003. Reseting and retrying.")
+        pms5003.reset()
+        #pm_values = pms5003.read()
+        #values["PM1"] = int(pm_values.pm_ug_per_m3(1))
+        #values["PM25"] = int(pm_values.pm_ug_per_m3(2.5))
+        #values["PM10"] = int(pm_values.pm_ug_per_m3(10))
 
     return values
 
@@ -164,6 +144,15 @@ converter = CoordinatesConverter()
 # create the db_location object to find the location id in the database
 db_location = DB_Location()
 
+try:
+    # Get the address by converting the coordinates
+    location = converter.reverse_geocode(latitude, longitude)  
+    if location is None:
+        raise ValueError("Coordinates conversion didn't work")
+except ValueError as e:
+    logging.warning(e)
+    exit()
+
 # Main loop to read data, display, and send to Database
 while True:
     try:
@@ -174,26 +163,33 @@ while True:
             password = data['password'],
             host = data['host'],
             port = data['port'],
-            database = data['database'],
+            database = data['database']
             #use_pure=True
-        )
-        
+        )  
     except mariadb.Error as e:
         logging.warning(f"Error connecting to MariaDB Platform: {e}")
         sys.exit(1)
 
     # Create a cursor to write on database
     mycursor = mydb.cursor()
-    # i=0
 
     # SQL query creation and execution
     try:
         logging.warning(bme280.get_pressure())
-        values = read_values()
+        
+        # Trying to read the values for 5 times to get more accurate values
+        for i in range(0, 5):
+            values = read_values()
+            time.sleep(5)
+            logging.info(values)
+
+        # Get the location id
+        values['id'] = int( db_location.getId(location) )
         # Get the timezone of our area
         now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
         # For hour with *:00:00 delete %M and %S 
         formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
+        print("***** VALUES *****") 
         logging.info(values)
         # Create the query for the database 
         sql = "INSERT INTO readings (date_time, pm1, pm25, pm10, temperature, humidity, air_pressure, no2, co, nh3, dBA, id_location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
@@ -212,4 +208,4 @@ while True:
     mydb.close()
 
     # Wait the time for the next detection
-    time.sleep(60)
+    time.sleep(30)
