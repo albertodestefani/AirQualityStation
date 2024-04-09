@@ -21,7 +21,7 @@ class CoordinatesConverter:
         try:
             # Ottieni l'indirizzo corrispondente alle coordinate
             location = self.geolocator.reverse(coordinates, language='it')
-            # print(f"Coordinate: {coordinates}")
+            print(f"Coordinate: {coordinates}")
             # print(f"Indirizzo: {location.address}")
             return location.address
         except Exception as e:
@@ -39,9 +39,11 @@ class CoordinatesConverter:
             address = data['address']
 
             # stringa da poter stampare come check error
-            self.location = address['road'] + ', ' + address['town'] + ', ' + address['county'] + ', ' + address['state'] + ', ' + address['country']
+            self.location = data['lat'] + data['lon'] + address['road'] + ', ' + address['town'] + ', ' + address['county'] + ', ' + address['state'] + ', ' + address['country']
             
             tupla = {
+                "latitude": data['lat'],
+                "longitude": data['lon'],
                 "road": address['road'], 
                 "town": address['town'], 
                 "county": address['county'], 
@@ -49,7 +51,6 @@ class CoordinatesConverter:
                 "country": address['country']
             }
             
-
             return tupla
         except Exception as e:
             print("error")
@@ -63,5 +64,6 @@ class CoordinatesConverter:
 # test
 converter = CoordinatesConverter()
 # 45.99755068 12.291252627
-datas = converter.reverse_geocode(45.99755068, 12.291252627)
+# 45.997566111  12.290824468
+datas = converter.reverse_geocode(45.997486149, 12.291401648)
 print(datas)

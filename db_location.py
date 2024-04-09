@@ -6,14 +6,20 @@ import json
 import mariadb
 import mysql.connector
 import sys
-
+from Haversine import HaversineCalculator
 
 class DB_Location:
     def __init__(self):
         with open('../conn/connection_data.json', 'r') as json_file:
             self.data = json.load(json_file)
+
+    def insertLocation(cursor, location):
+        sql = "INSERT INTO locations (road_address, city, province, region, country, latitude, longitude) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql, location)
         
     def getId(self, location):
+        haversine = HaversineCalculator();
+
         val = (
             location['road'], 
             location['town'], 
@@ -21,6 +27,10 @@ class DB_Location:
             location['state'], 
             location['country']
         )
+        coordinates = {
+            'latitude': location['latitude'],
+            'longitude': location['longitude']
+        }
 
         try:
             # Create connection to Database
@@ -35,33 +45,36 @@ class DB_Location:
             print(f"Error connecting to MariaDB Platform: {e}")
             sys.exit(1)
 
+
         cursor = mydb.cursor()
-        query = "SELECT * FROM locations WHERE (road_address = %s) AND (city = %s) AND (province = %s) AND (region = %s) AND (country = %s)"
-        cursor.execute(query, val)
-        
+        query = "SELECT * FROM locations"
+        cursor.execute(query)
+
         try:
-            row = cursor.fetchone()
-            id = row[0]
-            print("ID location: ", id)
+            datas = cursor.fetchall()
         except Exception as e:
-            print("Location non presente nel db, creazione di una nuova istanza ...")
+            print("Database vuoto...")
+            print("Inserimento della location nel db")
+            self.insertLocation(cursor, location)
+            return cursor.lastrowid
 
-            sql = "INSERT INTO locations (road_address, city, province, region, country) VALUES (%s, %s, %s, %s, %s)"
+        for data in datas:
+            # controllo della locazione precisa
+            tupla = tuple(item for index, item in enumerate(data) if index not in (0, 6, 7))
+            coordinates_tupla = tuple(item for index, item in enumerate(data) if index in (6, 7))
+            if(tupla == val):
+                return data['id']
+            # altrimenti cerca un arrotondamento
+            else:
+                if(haversine.coordinatesInRange(coordinates, coordinates_tupla, 100)): # raggio = 100
+                    return data['id']
 
-            cursor.execute(sql, val)
-
-            # assegna id successivo
-            """""
-            nel caso in cui venga scelto di realizzare nuove stazioni che lavorano in contemporanea
-            questa funzione è da riadattare perche potrebbero essere eseguite più query nello stesso momento
-            con risultante di un lastrowid inserito errato
-            """""
-            id = cursor.lastrowid
-            print("nuovo id: ", id)
+        # se non è stato possibile un arrotondamento inserisce la location nel db
+        self.insertLocation(cursor, location)
+        id = cursor.lastrowid 
 
         # Close databese connection for internet saving
         mydb.close()
-
         return id
 
     

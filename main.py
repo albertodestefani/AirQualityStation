@@ -187,7 +187,7 @@ while True:
             # logging.info(values)
 
         # Get the location id
-        values['id'] = int( db_location.getId(location) )
+        values['id'] = int(db_location.getId(location) )
         # Get the timezone of our area
         now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
         # For hour with *:00:00 delete %M and %S 
