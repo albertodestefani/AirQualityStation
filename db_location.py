@@ -45,7 +45,6 @@ class DB_Location:
             print(f"Error connecting to MariaDB Platform: {e}")
             sys.exit(1)
 
-
         cursor = mydb.cursor()
         query = "SELECT * FROM locations"
         cursor.execute(query)

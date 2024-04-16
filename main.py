@@ -183,6 +183,7 @@ while True:
         # Trying to read the values for 5 times to get more accurate values
         for i in tqdm(range(5)):
             values = read_values()
+            print("valori letti")
             time.sleep(5)
             # logging.info(values)
 
@@ -193,7 +194,7 @@ while True:
         # For hour with *:00:00 delete %M and %S 
         formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
         print("***** VALUES *****") 
-        logging.info(values)
+        logging.info(values)    
         # Create the query for the database 
         sql = "INSERT INTO readings (date_time, pm1, pm25, pm10, temperature, humidity, air_pressure, no2, co, nh3, dBA, id_location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         val = (formatted_date, values['PM1'], values['PM25'], values['PM10'], values['temperature'], values['humidity'], values['air_pressure'], values['Oxidising'], values['Reducing'], values['NH3'], values['dBA'], values['id'])
