@@ -183,7 +183,6 @@ while True:
         # Trying to read the values for 5 times to get more accurate values
         for i in tqdm(range(5)):
             values = read_values()
-            print("valori letti")
             time.sleep(5)
             # logging.info(values)
 
