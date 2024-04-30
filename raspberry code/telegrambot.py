@@ -1,7 +1,7 @@
 import os
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 
-TOKEN = "7134224901:AAGBSx9GwrYduwTUTNueRX6N4FDluf-cV2Q"
+TOKEN = ""
 
 def start(update, context):
     update.message.reply_text("Ciao sono AQS, invia il messaggio '/avvia' per eseguire una rilevazione")
