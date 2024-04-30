@@ -1,0 +1,108 @@
+/*Inclusione dei font*/
+@font-face { font-family: coves-bold; src: url('../font/Coves Bold.otf'); }
+@font-face { font-family: coves-light; src: url('../font/Coves Light.otf'); }
+/*famiglia dei font*/
+* {
+	font-family: coves-light;
+}
+
+/* titolo e logo div */
+div.bg-1 {
+	font-family: coves-bold;
+	background-color: #2C3E50;
+	color: #ffffff;
+}
+/*Valori attributi per i dispositivi con lo schermo max 600px*/
+@media screen and (max-width: 600px) {
+	/*Attibuti per il logo*/
+	#logo {
+		width: 30%;
+		height: 15%;
+		position: relative;
+		margin-top: 10px;
+		align-items: center;
+		margin-left: 35%;
+		margin-bottom: -2%;
+	}
+	/*Attributi per i grafici*/
+	#chart{
+		display: flex;
+		justify-content: center;
+	}
+	
+	.radialBar{
+		width: 200px;
+		scale: 0.8;
+	}
+	
+	#contenitore-grafici {
+		height: 400px !important;
+	}
+}
+
+/*valori per i dispositivi con lo shermo min 601px*/
+@media screen and (min-width: 601px) {
+	#logo {
+		width: 16%;
+		height: 8%;
+		position: absolute;
+		margin-top: 50px;
+	}
+		/* class for the chart AQI and DBA*/
+	#chart {
+		text-align: center;
+	}
+	/*allineamento del grafico AQI al centro*/
+	#radialBarAQI {
+		display: inline-block;
+	}
+
+	/*allinemanto del grafico DBA al centro*/
+	#radialBarDBA {
+		display: inline-block;
+	}
+}
+
+/*Attributi per il titolo*/
+#title {
+	font-variant: small-caps;
+}
+/*Attributi per il sottotitolo*/
+#subtitle {
+	font-size: 30px !important;
+	color: #e6e6e6 !important;
+	margin-top: 2%;
+	margin-bottom: -0.5%;
+}
+
+th {
+	text-align: center;
+	font-family: coves-bold;
+}
+
+th, td {
+	text-align: center !important;
+	width: 20%;
+}
+
+div.jumbotron {
+	margin-top: -30px;
+}
+
+div.container {
+	font-size: 20px;
+}
+
+/*Attributi per la form di ricerca data e ora*/
+#reading_datetime {
+	margin-bottom: 10px;
+	font-size: 20px;
+}
+
+/*Attributi per i grafici*/
+canvas {
+	width: 90% !important;
+	height: 45% !important;
+	aspect-ratio: 2;
+	margin: 5% auto 5% auto;
+}

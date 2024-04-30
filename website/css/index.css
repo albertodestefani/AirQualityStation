@@ -1,0 +1,146 @@
+/* Inclusione dei font */
+@font-face { font-family: coves-bold; src: url('../font/Coves Bold.otf'); }
+@font-face { font-family: coves-light; src: url('../font/Coves Light.otf'); }
+/*famiglia dei font*/
+* {
+	font-family: coves-light;
+}
+
+/* titolo e logo div */
+div.bg-1 {
+	font-family: coves-bold;
+	background-color: #2C3E50;	/* or #34495E */
+	color: #ffffff;
+}
+/*CSS per schermi con larghezza inferiore 600px*/
+@media screen and (max-width: 600px) {
+	/*attributi Logo*/
+	#logo {
+		width: 30%;
+		height: 15%;
+		position: relative;
+		margin-top: 10px;
+		align-items: center;
+		margin-left: 35%;
+		margin-bottom: -2%;
+	}
+	
+	/*attributi grafici*/
+	#chart{
+		display: flex;
+		justify-content: center;
+	}
+	/*allinea il grafico AQI in centro*/
+	#radialBar {
+		display: inline-block;
+	}
+	/*allinea il grafico DBA in centro*/
+	#radialBarDBA {  
+		display: inline-block; 
+	} 
+	
+}
+/* CSS per schermi con larghezza superiore a 600px*/
+@media screen and (min-width: 601px) {
+	#logo {
+		width: 16%;
+		height: 8%;
+		position: absolute;
+		margin-top: 50px;
+	}
+	/* class for the chart AQI and DBA*/
+	#chart {
+		text-align: center;
+	}
+	/*allineamento del grafico AQI al centro*/
+	#radialBarAQI {
+		display: inline-block;
+	}
+
+	/*allinemanto del grafico DBA al centro*/
+	#radialBarDBA {
+		display: inline-block;
+	}
+}
+
+/*attributi titolo*/
+#title {
+	font-variant: small-caps;
+}
+/*attributi sottotitolo */
+#subtitle {
+	font-size: 30px !important;
+	color: #e6e6e6 !important;
+	margin-top: 2%;
+	margin-bottom: -0.5%;
+}
+/*Attributi intestazione tabella*/
+th {
+	text-align: center;
+	font-family: coves-bold;
+}
+/*Attributi intestazione tabella e celle della tabella*/
+th, td {
+	text-align: center !important;
+	width: 25%;
+}
+
+div.jumbotron {
+	margin-top: -30px;
+}
+/*Attributi del conatiner del div*/
+div.container {
+	font-size: 20px;
+}
+
+/* link per tutte le misurazione */
+#readings {
+	margin-bottom: 4.5%;
+	font-size: 25px;
+}
+
+/* spiegazione */
+.expText {
+	font-size: 25px !important;
+	margin-top: -0.5%;
+}
+/*Attributi per le spiegazioni*/
+#explan {
+	padding: 3% 8%;
+}
+/*Attrinuti per la spiegazione degli inquinanti della classe*/
+#pollutant {
+	font-size: 35px;
+}
+/*Attrinuti per la spiegazione degli inquinanti degli id*/
+.pollutant {
+	font-size: 30px;
+}
+
+li {
+	margin-bottom: 1%;
+}
+
+/*descrizione titolo del progetto*/
+#project {
+	font-variant: small-caps;
+	font-size: 60px;
+	margin-top: -1%;
+}
+/*Attributo per i video*/
+#video {
+	flex-wrap: wrap;
+	margin-bottom: 0;
+	display: flex;
+	justify-content: space-around;
+	align-items: center; 
+	align-content: center;
+}
+/*Attributio per il video in Italiano*/
+#videoit {
+	margin: 10px;
+}
+/*Attributo per il video in Inglese*/
+#videoen {
+	margin: 10px;
+}

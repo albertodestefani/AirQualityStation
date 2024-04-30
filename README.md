@@ -1,2 +1,0 @@
-# AirQualityStation
-Air Quality Station 

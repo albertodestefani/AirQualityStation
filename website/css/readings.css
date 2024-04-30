@@ -1,0 +1,144 @@
+/*Inclusione Font */
+@font-face { font-family: coves-bold; src: url('../font/Coves Bold.otf'); }
+@font-face { font-family: coves-light; src: url('../font/Coves Light.otf'); }
+/*famiglia dei font*/
+* {
+	font-family: coves-light;
+}
+
+/* titolo e logo div */
+div.bg-1 {
+	font-family: coves-bold;
+	background-color: #2c3e50;
+	color: #ffffff;
+}
+/*CSS per schermi con larghezza massima di 600px*/
+@media screen and (max-width: 600px) {
+	/*attributi Logo*/
+	#logo {
+		width: 30%;
+		height: 15%;
+		position: relative;
+		margin-top: 10px;
+		align-items: center;
+		margin-left: 35%;
+		margin-bottom: -2%;
+	}
+	/*attributi per le letture della data e ora*/
+	#reading_datetime{
+		text-align: center;
+	}
+	/*Attributi per il form della ricerca*/
+	#readings_from {
+		text-align: center;
+	}
+	
+	tr th:nth-child(4), tr td:nth-child(4) {
+		display: none;
+	}
+
+	tr th:nth-child(5), tr td:nth-child(5) {
+		display: none;
+	}
+
+	tr th:nth-child(6), tr td:nth-child(6) {
+		display: none;
+	}
+}
+/*CSS per gli schermi minimi con 600px*/
+@media screen and (min-width: 601px) {
+	/*Atributi logo*/
+	#logo {
+		width: 16%;
+		height: 8%;
+		position: absolute;
+		margin-top: 50px;
+	}
+	/*Attributi per la rivelazione della data e ora*/
+	#reading_datetime{
+		text-align: right;
+	}
+	/*Attributi per il form della ricerca*/
+	#readings_from {
+		text-align: right	;
+	}
+
+}
+
+/*Attributi Logo*/
+#title {
+	font-variant: small-caps;
+}
+/*Attributi sotto titolo*/
+#subtitle {
+	font-size: 30px !important;
+	color: #e6e6e6 !important;
+	margin-top: 2%;
+	margin-bottom: -0.5%;
+}
+
+th {
+	text-align: center;
+	font-family: coves-bold;
+}
+
+th, td {
+	width: 18%;
+	text-align: center !important;
+}
+
+th.col {
+	width: 16%;
+}
+
+th#btn_col {
+	width: 11% !important;
+}
+
+div.jumbotron {
+	margin-top: -30px;
+}
+
+div.container {
+	font-size: 20px;
+}
+
+a:link.orderBy {
+	color: black;
+	text-decoration: none;
+}
+
+a:visited.orderBy {
+	color: black;
+}
+
+a:hover.orderBy {
+	color: #1abc9c;
+}
+
+/*Attributi per il form per la ricerca dei dati specifici*/
+#reading_datetime {
+	margin-bottom: 10px;
+	font-size: 20px;
+}
+
+/* Attributi per i grafici */
+canvas {
+	width: 90% !important;
+	height: 45% !important;
+	aspect-ratio: 2;
+	margin: 5% auto 5% auto;
+}
+
+#footer{
+	display: flex;
+	justify-content: space-between;
+}
+
+#dload_btn{
+	padding-left: 0;
+}
+
+#load_more{
+	padding-right: 0;
+}
