@@ -72,8 +72,6 @@ import subprocess
 from telegram.ext import Updater, CommandHandler, MessageHandler
 
 # IMPORTANTE: inserire il token fornito dal BotFather nella seguente stringa
-TOKEN="6584356882:AAGrEAlVGggEmDJZCiXj0-LxZ2HHvk2y0UE"
-
 def start(update, context):
     update.message.reply_text('Benvenuto! Usa /start_detection per avviare la rilevazione e /show_website per vedere i risultati.')
 
