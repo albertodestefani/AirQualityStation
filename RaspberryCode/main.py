@@ -1,4 +1,5 @@
 # Module Imports
+import os
 import requests
 import ST7735
 from bme280 import BME280
@@ -110,6 +111,17 @@ def get_connection_data():
     with open('../conn/connection_data.json', 'r') as json_file:
         data = json.load(json_file)
         return data
+    
+def writeTempData(data):
+    with open('temp/readings.json', 'a') as json_file:
+        json.dump(data, json_file)
+        json_file.write("\n")
+
+def setPID():
+    with open("RaspberryCode/temp/pid.txt", "w") as file:
+        # Scrivi nel file
+        pid = os.getpid()
+        file.write(str(pid))
 
 # cretae the function to get the temperature of the CPU for compensation
 def get_cpu_temperature():
@@ -179,6 +191,9 @@ while True:
     # SQL query creation and execution
     try:
         logging.warning(bme280.get_pressure())
+        setPID()
+
+        values["date"] = ''
         
         # Trying to read the values for 5 times to get more accurate values
         for i in tqdm(range(5)):
@@ -192,6 +207,7 @@ while True:
         now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
         # For hour with *:00:00 delete %M and %S 
         formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
+        values["date"] = formatted_date
         print("***** VALUES *****") 
         logging.info(values)    
         # Create the query for the database 
@@ -202,6 +218,8 @@ while True:
         #Confirm the changes in the database are made correctly
         mydb.commit()
         print("Query done")
+
+        writeTempData(values)
     except Exception as e:
         logging.warning('Main Loop Exception: {}'.format(e))
         
