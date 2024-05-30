@@ -1,6 +1,5 @@
 import json
 import logging
-import os
 import subprocess
 import asyncio
 from telegram import Update
@@ -22,11 +21,6 @@ def getToken():
         print(f"Errore durante il caricamento del token: {e}")
         exit(1)
 
-# Funzione per stampare messaggi di debug
-def __debug(msg):
-    if DEBUG:
-        print("\033[94m[DEBUG]\033[0m", msg)
-
 def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     logging.error(f'Exception {context.error} occurred while processing update {update}')
 
@@ -38,17 +32,20 @@ def getPID():
             return pid if pid else None
     except subprocess.CalledProcessError:
         return None
+    
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Ciao! Questo bot controlla la stazione AQS, rilevatore di qualità dell'aria nel comune di Vittorio Veneto. \n" + 
+        + "Utilizza /start_detection per iniziare la rilevazione e /stop_detection per terminarla.")
 
 # Funzione asincrona per gestire il comando /start
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def start_detection(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if getPID() == None:
         await update.message.reply_text('Avvio della rilevazione...')
-        # subprocess.Popen(["python3", "RaspberryCode/mainTest.py"]) #in modo asincrono
         subprocess.Popen(["python3", "RaspberryCode/main.py"]) #in modo asincrono
     else:
         await update.message.reply_text('Rilevazione già in corso... Attendere')
 
-# Funzione asincrona per gestire il comando /stop
+# Funzione asincrona per gestire il comando /stop --> valida per sistemi linux-like
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pid = getPID()
     if pid:
@@ -65,6 +62,7 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     else:
         await update.message.reply_text('Nessuna rilevazione in corso.')
 
+# Funzione valida solo per sistemi windows (test)
 # async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 #     pid = getPID()
 #     if pid:
@@ -78,9 +76,7 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 #     if data.stdout.strip():
 #         await update.message.reply_text(data.stdout)
 #     else:
-#         await update.message.reply_text('Nessun dato disponibile.')
-
-
+#         await update.message.reply_text('Nessun dato disponibile.') 
 
 # Funzione principale per configurare e avviare il bot
 def main():
@@ -97,7 +93,8 @@ def main():
     application.add_error_handler(error_handler)
 
     # Aggiunge i gestori di comandi
-    application.add_handler(CommandHandler("start_detection", start))
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("start_detection", start_detection))
     application.add_handler(CommandHandler("stop_detection", stop))
 
     # Avvia il bot in modalità polling per ricevere messaggi

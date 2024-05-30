@@ -111,14 +111,21 @@ def get_connection_data():
     with open('../conn/connection_data.json', 'r') as json_file:
         data = json.load(json_file)
         return data
-    
-def writeTempData(data):
-    with open('temp/readings.json', 'a') as json_file:
-        json.dump(data, json_file)
-        json_file.write("\n")
 
+def writeTempData(data):
+    try:
+        with open('./readings_test.json', 'r') as json_file:
+            readings = json.load(json_file)
+    except FileNotFoundError:
+        readings = []
+    
+    readings.append(data)
+    
+    with open('./readings_test.json', 'w') as json_file:
+        json.dump(readings, json_file, indent=4)
+ 
 def setPID():
-    with open("RaspberryCode/temp/pid.txt", "w") as file:
+    with open("temp/pid.txt", "w") as file:
         # Scrivi nel file
         pid = os.getpid()
         file.write(str(pid))
@@ -192,6 +199,7 @@ while True:
     try:
         logging.warning(bme280.get_pressure())
         setPID()
+        print("Pid settato")
 
         values["date"] = ''
         
