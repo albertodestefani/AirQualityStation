@@ -34,13 +34,14 @@ class CoordinatesConverter:
         try:
             url = f"https://nominatim.openstreetmap.org/reverse?lat={latitude}&lon={longitude}&format=json&accept-language=it&addressdetails=1"
             response = requests.get(url)
+            response.raise_for_status()  # Check for HTTP errors
             data = response.json()
             
             address = data['address']
 
             # stringa da poter stampare come check error
             self.location = data['lat'] + data['lon'] + address['road'] + ', ' + address['town'] + ', ' + address['county'] + ', ' + address['state'] + ', ' + address['country']
-            
+
             tupla = {
                 "latitude": data['lat'],
                 "longitude": data['lon'],
@@ -52,8 +53,11 @@ class CoordinatesConverter:
             }
             
             return tupla
+        except requests.RequestException as e:
+            print(f"HTTP error: {e}")
+            return None
         except Exception as e:
-            print("error")
+            print(f"Unexpected error: {e}")
             return None
         
     def get_string(self):

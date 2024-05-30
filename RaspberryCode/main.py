@@ -150,8 +150,8 @@ try:
         latitude = float(coordinates[0])
         longitude = float(coordinates[1])
 
-        # print("Latitude:", latitude)
-        # print("Longitude:", longitude)
+        print("Latitude:", latitude)
+        print("Longitude:", longitude)
 except FileNotFoundError:
     logging.warning("Error: file not exists")
 except PermissionError:
