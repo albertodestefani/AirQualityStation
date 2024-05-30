@@ -201,8 +201,8 @@ while True:
         setPID()
         logging.info("PID set")
 
-        # Trying to read the values for 5 times to get more accurate values
-        for i in tqdm(range(5)):
+        # Trying to read the values for 3 times to get more accurate values
+        for i in tqdm(range(3)):
             values = read_values()
             time.sleep(5)
             # logging.info(values)
@@ -215,6 +215,7 @@ while True:
         formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
         # Insert the date 
         values = {"date" : formatted_date, **values}
+        print("Values edited:\n", values)
         print("***** VALUES *****") 
         logging.info(values)    
         # Create the query for the database 
