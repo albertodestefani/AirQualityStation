@@ -10,7 +10,7 @@ from Haversine import HaversineCalculator
 
 class DB_Location:
     def __init__(self):
-        with open('../conn/connection_data.json', 'r') as json_file:
+        with open('../../conn/connection_data.json', 'r') as json_file:
             self.data = json.load(json_file)
 
     def insertLocation(cursor, location):
@@ -61,12 +61,12 @@ class DB_Location:
             # controllo della locazione precisa
             tupla = tuple(item for index, item in enumerate(data) if index not in (0, 6, 7))
             coordinates_tupla = tuple(item for index, item in enumerate(data) if index in (6, 7))
-            if(tupla == val):
-                return data['id']
+            if tupla == val:
+                return data[0]
             # altrimenti cerca un arrotondamento
             else:
                 if(haversine.coordinatesInRange(coordinates, coordinates_tupla, 100)): # raggio = 100
-                    return data['id']
+                    return data[0]
 
         # se non è stato possibile un arrotondamento inserisce la location nel db
         self.insertLocation(cursor, location)

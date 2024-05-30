@@ -206,7 +206,10 @@ while True:
             values = read_values()
             time.sleep(5)
             # logging.info(values)
+        logging.info("Reading values")
+        
 
+        print("Debug0")
         # Get the location id
         values['id'] = int(db_location.getId(location) )
         print ("Debug1")
