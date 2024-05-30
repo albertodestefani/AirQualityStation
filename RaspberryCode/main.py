@@ -108,7 +108,7 @@ def read_values():
 
 # Apri il file JSON e carica i dati di configurazione database
 def get_connection_data():
-    with open('../conn/connection_data.json', 'r') as json_file:
+    with open('../../conn/connection_data.json', 'r') as json_file:
         data = json.load(json_file)
         return data
 
@@ -141,7 +141,7 @@ def get_cpu_temperature():
 comp_factor = 2.8
 
 # read the coordinates from the temp file 
-filepath = "../temp/coordinates.txt"
+filepath = "../../temp/coordinates.txt"
 try:
     with open(filepath, 'r') as file:
         content = file.read()
@@ -225,8 +225,7 @@ while True:
         mycursor.execute(sql, val)
         #Confirm the changes in the database are made correctly
         mydb.commit()
-        print("Query done")
-
+        logging.info("Query done")
         writeTempData(values)
     except Exception as e:
         logging.warning('Main Loop Exception: {}'.format(e))
