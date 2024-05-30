@@ -199,10 +199,8 @@ while True:
     try:
         logging.warning(bme280.get_pressure())
         setPID()
-        print("Pid settato")
+        logging.info("PID set")
 
-        values["date"] = ''
-        
         # Trying to read the values for 5 times to get more accurate values
         for i in tqdm(range(5)):
             values = read_values()
@@ -215,7 +213,8 @@ while True:
         now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
         # For hour with *:00:00 delete %M and %S 
         formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
-        values["date"] = formatted_date
+        # Insert the date 
+        values = {"date" : formatted_date, **values}
         print("***** VALUES *****") 
         logging.info(values)    
         # Create the query for the database 
