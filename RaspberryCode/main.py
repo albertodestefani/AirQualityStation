@@ -209,13 +209,15 @@ while True:
 
         # Get the location id
         values['id'] = int(db_location.getId(location) )
+        print ("Debug1")
         # Get the timezone of our area
         now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
         # For hour with *:00:00 delete %M and %S 
         formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
         # Insert the date 
+        print ("Debug2")
         values = {"date" : formatted_date, **values}
-        print("Values edited:\n", values)
+        print ("Debug3")
         print("***** VALUES *****") 
         logging.info(values)    
         # Create the query for the database 

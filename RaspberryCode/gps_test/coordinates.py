@@ -32,7 +32,7 @@ class CoordinatesConverter:
     # ritorna una tupla contenente dati essenziali
     def reverse_geocode(self, latitude, longitude):
         try:
-            url = f"https://nominatim.openstreetmap.org/reverse?lat={latitude}&lon={longitude}&format=json&accept-language=it&addressdetails=1"
+            url = f"https://nominatim.openstreetmap.org/reverse?lat={latitude}&lon={longitude}&format=json"
             response = requests.get(url)
             response.raise_for_status()  # Check for HTTP errors
             data = response.json()
