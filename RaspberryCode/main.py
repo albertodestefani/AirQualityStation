@@ -108,24 +108,34 @@ def read_values():
 
 # Apri il file JSON e carica i dati di configurazione database
 def get_connection_data():
-    with open('../../conn/connection_data.json', 'r') as json_file:
+    with open('../conn/connection_data.json', 'r') as json_file: #../../conn/connection_data.json
         data = json.load(json_file)
         return data
 
 def writeTempData(data):
     try:
-        with open('./readings_test.json', 'r') as json_file:
+        with open('RaspberryCode/temp/readings_test.json', 'r') as json_file:
             readings = json.load(json_file)
     except FileNotFoundError:
         readings = []
     
     readings.append(data)
     
-    with open('./readings_test.json', 'w') as json_file:
+    with open('RaspberryCode/temp/readings_test.json', 'w') as json_file:
         json.dump(readings, json_file, indent=4)
+
+def setCounter(i):
+    with open("RaspberryCode/temp/numberOfReadings.txt", "w") as file:
+        # Scrivi nel file
+        file.write(str(i))   
+
+def resetCounter():
+    with open("RaspberryCode/temp/numberOfReadings.txt", "w") as file:
+        # Scrivi nel file
+        file.write('')  
  
 def setPID():
-    with open("temp/pid.txt", "w") as file:
+    with open("RaspberryCode/temp/pid.txt", "w") as file:
         # Scrivi nel file
         pid = os.getpid()
         file.write(str(pid))
@@ -141,7 +151,7 @@ def get_cpu_temperature():
 comp_factor = 2.8
 
 # read the coordinates from the temp file 
-filepath = "../../temp/coordinates.txt"
+filepath = "RaspberryCode/temp/coordinates.txt"
 try:
     with open(filepath, 'r') as file:
         content = file.read()
@@ -175,8 +185,13 @@ except ValueError as e:
     logging.warning(e)
     exit()
 
+# Counter 
+i = 0
+resetCounter()
+
 # Main loop to read data, display, and send to Database
 while True:
+
     try:
         data = get_connection_data()
         # Create connection to Database
@@ -207,6 +222,7 @@ while True:
             time.sleep(5)
             # logging.info(values)
         logging.info("Reading values")
+
         
 
         print("Debug0")
@@ -232,6 +248,9 @@ while True:
         mydb.commit()
         logging.info("Query done")
         writeTempData(values)
+        # Reload counter
+        i = i + 1
+        setCounter(i)
     except Exception as e:
         logging.warning('Main Loop Exception: {}'.format(e))
         

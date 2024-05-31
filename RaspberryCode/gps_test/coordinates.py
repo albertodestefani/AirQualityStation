@@ -3,31 +3,12 @@
 # il programma manda una request HTTP e l'host ritorna dei dati in formato json
 # il programma va poi a fare una cernita dei dati per costruire una stringa 
 
-# attualmente la funzione coordinates_to_address non è utilizzata perchè non permette di costruire la stringa a piacimento
 
 
 #pip install geopy
-from geopy.geocoders import Nominatim
 import requests
 
-class CoordinatesConverter:
-    def __init__(self):
-        self.geolocator = Nominatim(user_agent="gps_converter")
-
-    def coordinates_to_address(self, latitude, longitude):
-        # Combina le coordinate
-        coordinates = f"{latitude}, {longitude}"
-
-        try:
-            # Ottieni l'indirizzo corrispondente alle coordinate
-            location = self.geolocator.reverse(coordinates, language='it')
-            print(f"Coordinate: {coordinates}")
-            # print(f"Indirizzo: {location.address}")
-            return location.address
-        except Exception as e:
-            print(f"Errore durante la conversione delle coordinate: {e}")
-            return None
-        
+class CoordinatesConverter:   
     # usiamo questo per avere una gestione completa della response
     # ritorna una tupla contenente dati essenziali
     def reverse_geocode(self, latitude, longitude):

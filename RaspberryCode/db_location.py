@@ -10,7 +10,7 @@ from Haversine import HaversineCalculator
 
 class DB_Location:
     def __init__(self):
-        with open('../../conn/connection_data.json', 'r') as json_file:
+        with open('../conn/connection_data.json', 'r') as json_file:
             self.data = json.load(json_file)
 
     def insertLocation(cursor, location):
