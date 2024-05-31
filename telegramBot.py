@@ -65,7 +65,7 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         date_end = now.strftime('%Y-%m-%d %H:%M')
         pdfPath = printer.getPDF(date_start, date_end)
-        logging.warning("PDF path: ", pdfPath)
+        print("PDF path: ", pdfPath)
 
         # filepath = subprocess.run(["python3", "RaspberryCode/readData.py"], capture_output=True, text=True)
         if pdfPath:
