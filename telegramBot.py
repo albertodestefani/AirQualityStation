@@ -14,7 +14,7 @@ DEBUG = 1
 printer = ReadData()
 # Get the timezone of our area
 now = datetime.datetime.now(pytz.timezone("Europe/Rome")) 
-date = now.strftime('%Y-%m-%d')
+date_start = now.strftime('%Y-%m-%d %H:%M')
 
 # Funzione per ottenere il token del bot da un file JSON
 def getToken():
@@ -64,7 +64,8 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await process.communicate()
         await update.message.reply_text('Rilevazione terminata... invio dei dati...')
 
-        pdfPath = printer.getPDF(date, date)
+        date_end = now.strftime('%Y-%m-%d %H:%M')
+        pdfPath = printer.getPDF(date_start, date_end)
 
         filepath = subprocess.run(["python3", "RaspberryCode/readData.py"], capture_output=True, text=True)
         if filepath:
