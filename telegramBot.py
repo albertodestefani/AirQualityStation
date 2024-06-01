@@ -54,6 +54,24 @@ async def start_detection(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 async def website(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text('Sito web dove trovare lo storico completo delle rilevazioni:\n http://www.comunevittorioveneto.it/airqualitystation/')
 
+async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Reset file temporanei")
+    subprocess.run(['truncate', '-s', '0', 'RaspberryCode/temp/numberOfReadings.txt'])
+    subprocess.run(['truncate', '-s', '0', 'RaspberryCode/temp/pid.txt'])
+    # subprocess.run(['truncate', '-s', '0', 'RaspberryCode/temp/coordinates.txt'])
+
+async def coordinates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Rilevazione delle coordinate in corso")
+    subprocess.Popen(['./getCoordinates.sh'])
+
+    try:
+        with open("RaspberryCode/temp/coordinates.txt") as file:
+            data = file.read()
+            return data != ''
+    except FileNotFoundError:
+        print("File non trovato")
+        return False
+
 # Funzione asincrona per gestire il comando /stop --> valida per sistemi linux-like
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pid = getPID()
@@ -63,17 +81,17 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await process.communicate()
         await update.message.reply_text('Rilevazione terminata... invio dei dati...')
 
-        date_end = now.strftime('%Y-%m-%d %H:%M')
-        pdfPath = printer.getPDF(date_start, date_end)
-        print("PDF path: ", pdfPath)
+    #     date_end = now.strftime('%Y-%m-%d %H:%M')
+    #     pdfPath = printer.getPDF(date_start, date_end)
+    #     print("PDF path: ", pdfPath)
 
-        # filepath = subprocess.run(["python3", "RaspberryCode/readData.py"], capture_output=True, text=True)
-        if pdfPath:
-            await update.message.reply_document(document=open(pdfPath, 'rb'))
-        else:
-            await update.message.reply_text('Errore nella generazione del PDF.')
-    else:
-        await update.message.reply_text('Nessuna rilevazione in corso.')
+    #     # filepath = subprocess.run(["python3", "RaspberryCode/readData.py"], capture_output=True, text=True)
+    #     if pdfPath:
+    #         await update.message.reply_document(document=open(pdfPath, 'rb'))
+    #     else:
+    #         await update.message.reply_text('Errore nella generazione del PDF.')
+    # else:
+    #     await update.message.reply_text('Nessuna rilevazione in corso.')
 
 # Funzione valida solo per sistemi windows (test)
 # async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -110,6 +128,11 @@ def main():
     application.add_handler(CommandHandler("start_detection", start_detection))
     application.add_handler(CommandHandler("stop_detection", stop))
     application.add_handler(CommandHandler("website", website))
+    application.add_handler(CommandHandler("reset", reset))
+    application.add_handler(CommandHandler("get_coordinates", coordinates))
+
+    # Reset file temporanei
+    reset()
 
     # Avvia il bot in modalità polling per ricevere messaggi
     application.run_polling()

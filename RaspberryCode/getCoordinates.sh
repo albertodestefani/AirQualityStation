@@ -1,10 +1,6 @@
 # Rilevazione delle coordinate e scrittura su file temporaneo
 #!/bin/bash
 
-# Reset file temporaneo
-truncate -s 0 RaspberryCode/temp/readings.json
-truncate -s 0 RaspberryCode/temp/pid.txt
-
 # Esegui il comando gpspipe e cattura l'output
 output=$(gpspipe -w -n 10 | grep -m 1 -oP '"lat":\K[-\d.]+|(?<="lon":)[-\d.]+' | tr '\n' ' ')
 
@@ -30,6 +26,6 @@ if [ $? -ne 0 ]; then
 fi
 
 # Avvio del main
-python3 ../TelegramBot/telegramBot.py
+# python3 ../TelegramBot/telegramBot.py
 
 
