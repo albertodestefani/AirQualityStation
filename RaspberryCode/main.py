@@ -17,6 +17,8 @@ from Noise import Noise
 from gps_test.coordinates import CoordinatesConverter
 from db_location import DB_Location
 
+# Tutti i percorsi dei file sono relativi a telegramBot.py
+
 # Progressive bar
 from time import sleep
 from tqdm import tqdm
@@ -106,12 +108,13 @@ def read_values():
 
     return values
 
-# Apri il file JSON e carica i dati di configurazione database
+# Open the JSON file and load the database configuration datas
 def get_connection_data():
     with open('../conn/connection_data.json', 'r') as json_file: #../../conn/connection_data.json
         data = json.load(json_file)
         return data
 
+# Write readings data in a JSON file (not used)
 def writeTempData(data):
     try:
         with open('RaspberryCode/temp/readings_test.json', 'r') as json_file:
@@ -124,23 +127,26 @@ def writeTempData(data):
     with open('RaspberryCode/temp/readings_test.json', 'w') as json_file:
         json.dump(readings, json_file, indent=4)
 
+# Function that saves a readings counter in a temp file to use it for the pdf generation 
 def setCounter(i):
     with open("RaspberryCode/temp/numberOfReadings.txt", "w") as file:
         # Scrivi nel file
         file.write(str(i))   
 
+# Function that resets the readings counter
 def resetCounter():
     with open("RaspberryCode/temp/numberOfReadings.txt", "w") as file:
         # Scrivi nel file
         file.write('')  
  
+# Function that saves the main.py PID to kill the process in the telegram bot
 def setPID():
     with open("RaspberryCode/temp/pid.txt", "w") as file:
         # Scrivi nel file
         pid = os.getpid()
         file.write(str(pid))
 
-# cretae the function to get the temperature of the CPU for compensation
+# create the function to get the temperature of the CPU for compensation
 def get_cpu_temperature():
     with open("/sys/class/thermal/thermal_zone0/temp", "r") as f:
         temp = f.read()
@@ -187,6 +193,7 @@ except ValueError as e:
 
 # Counter 
 i = 0
+# Reset the counter in the temp file
 resetCounter()
 
 # Main loop to read data, display, and send to Database
@@ -223,7 +230,6 @@ while True:
             # logging.info(values)
         logging.info("Reading values")
 
-        
         # Get the location id
         values['id'] = int(db_location.getId(location) )
 
@@ -237,19 +243,17 @@ while True:
         logging.info(values)    
         # Create the query for the database 
         sql = "INSERT INTO readings (date_time, pm1, pm25, pm10, temperature, humidity, air_pressure, no2, co, nh3, dBA, id_location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (formatted_date, values['PM1'], values['PM25'], values['PM10'], values['temperature'], values['humidity'], values['air_pressure'], values['Oxidising'], values['Reducing'], values['NH3'], values['dBA'], values['id'])
+        val = (values['date'], values['PM1'], values['PM25'], values['PM10'], values['temperature'], values['humidity'], values['air_pressure'], values['Oxidising'], values['Reducing'], values['NH3'], values['dBA'], values['id'])
         # Execute the SQL query
         mycursor.execute(sql, val)
         #Confirm the changes in the database are made correctly
         mydb.commit()
         logging.info("Query done")
-        writeTempData(values)
         # Reload counter
         i = i + 1
         setCounter(i)
     except Exception as e:
-        logging.warning('Main Loop Exception: {}'.format(e))
-        
+        logging.warning('Main Loop Exception: {}'.format(e))   
 
     # Close cursor and databese connection for internet saving
     mycursor.close()

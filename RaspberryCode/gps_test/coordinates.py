@@ -3,14 +3,11 @@
 # il programma manda una request HTTP e l'host ritorna dei dati in formato json
 # il programma va poi a fare una cernita dei dati per costruire una stringa 
 
-
-
-#pip install geopy
 import requests
 
 class CoordinatesConverter:   
-    # usiamo questo per avere una gestione completa della response
-    # ritorna una tupla contenente dati essenziali
+    # We use this to have full control over the response
+    # Returns a tuple containing essential data
     def reverse_geocode(self, latitude, longitude):
         try:
             url = f"https://nominatim.openstreetmap.org/reverse?lat={latitude}&lon={longitude}&format=json"
@@ -20,9 +17,10 @@ class CoordinatesConverter:
             
             address = data['address']
 
-            # stringa da poter stampare come check error
+            # String that can be printed for error checking
             self.location = data['lat'] + data['lon'] + address['road'] + ', ' + address['town'] + ', ' + address['county'] + ', ' + address['state'] + ', ' + address['country']
 
+            # Create a formatted tuple with selected data to return
             tupla = {
                 "latitude": data['lat'],
                 "longitude": data['lon'],
@@ -43,7 +41,7 @@ class CoordinatesConverter:
         
     def get_string(self):
         return self.location
-        
+
 
 
 # test

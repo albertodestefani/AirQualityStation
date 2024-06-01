@@ -8,30 +8,31 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 from RaspberryCode.readData import ReadData
 
-# Imposta la variabile DEBUG per attivare/disattivare i messaggi di debug
+# Set the DEBUG variable to enable/disable debug messages
 DEBUG = 1
 printer = ReadData()
 # Get the timezone of our area
 now = datetime.datetime.now(pytz.timezone("Europe/Rome")) 
 date_start = now.strftime('%Y-%m-%d %H:%M')
 
-# Funzione per ottenere il token del bot da un file JSON
+# Function to get the bot token from a JSON file
 def getToken():
     try:
-        # Apri il file JSON contenente il token
+        # Open the JSON file containing the token
         with open('../conn/telegramBot.json', 'r') as json_file:
             data = json.load(json_file)
         token = data['token']
         return token
     except Exception as e:
-        # Gestisce eventuali errori durante il caricamento del token
-        print(f"Errore durante il caricamento del token: {e}")
+        # Handle any errors during token loading
+        print(f"Error loading the token: {e}")
         exit(1)
 
+# Error handler for the bot
 def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     logging.error(f'Exception {context.error} occurred while processing update {update}')
 
-
+# Function to get the PID from a file
 def getPID():
     try:
         with open("RaspberryCode/temp/pid.txt", "r") as file:
@@ -40,28 +41,32 @@ def getPID():
     except subprocess.CalledProcessError:
         return None
     
+# Async function to handle the /start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Ciao! Questo bot controlla la stazione AQS, rilevatore di qualità dell'aria nel comune di Vittorio Veneto. \nUtilizza /start_detection per iniziare la rilevazione e /stop_detection per terminarla.")
+    await update.message.reply_text("Hello! This bot monitors the AQS station, an air quality detector in the municipality of Vittorio Veneto. \nUse /start_detection to start detection and /stop_detection to stop it.")
 
-# Funzione asincrona per gestire il comando /start
+# Async function to handle the /start_detection command
 async def start_detection(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if getPID() == None:
-        await update.message.reply_text('Avvio della rilevazione... Attendere 30 secondi')
-        subprocess.Popen(["python3", "RaspberryCode/main.py"]) #in modo asincrono
+    if getPID() is None:
+        await update.message.reply_text('Starting detection... Please wait 30 seconds')
+        subprocess.Popen(["python3", "RaspberryCode/main.py"]) # Start detection asynchronously
     else:
-        await update.message.reply_text('Rilevazione già in corso...')
+        await update.message.reply_text('Detection already in progress...')
 
+# Async function to handle the /website command
 async def website(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text('Sito web dove trovare lo storico completo delle rilevazioni:\n http://www.comunevittorioveneto.it/airqualitystation/')
+    await update.message.reply_text('Website with the complete history of detections:\n http://www.comunevittorioveneto.it/airqualitystation/')
 
+# Async function to handle the /reset command
 async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Reset file temporanei")
+    await update.message.reply_text("Resetting temporary files")
     subprocess.run(['truncate', '-s', '0', 'RaspberryCode/temp/numberOfReadings.txt'])
     subprocess.run(['truncate', '-s', '0', 'RaspberryCode/temp/pid.txt'])
     # subprocess.run(['truncate', '-s', '0', 'RaspberryCode/temp/coordinates.txt'])
 
+# Async function to handle the /get_coordinates command
 async def coordinates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Rilevazione delle coordinate in corso")
+    await update.message.reply_text("Detecting coordinates")
     subprocess.Popen(['./getCoordinates.sh'])
 
     try:
@@ -69,70 +74,71 @@ async def coordinates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             data = file.read()
             return data != ''
     except FileNotFoundError:
-        print("File non trovato")
+        print("File not found")
         return False
 
-# Funzione asincrona per gestire il comando /stop --> valida per sistemi linux-like
+# Async function to handle the /stop command (Linux-like systems)
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pid = getPID()
     if pid:
-        # Usa subprocess per inviare il segnale di terminazione
+        # Use subprocess to send the termination signal
         process = await asyncio.create_subprocess_shell(f"kill {pid}")
         await process.communicate()
-        await update.message.reply_text('Rilevazione terminata... invio dei dati...')
+        await update.message.reply_text('Detection stopped... sending data...')
 
-    #     date_end = now.strftime('%Y-%m-%d %H:%M')
-    #     pdfPath = printer.getPDF(date_start, date_end)
-    #     print("PDF path: ", pdfPath)
+    # Uncomment and adjust this section to send a PDF report
+    # date_end = now.strftime('%Y-%m-%d %H:%M')
+    # pdfPath = printer.getPDF(date_start, date_end)
+    # print("PDF path: ", pdfPath)
 
-    #     # filepath = subprocess.run(["python3", "RaspberryCode/readData.py"], capture_output=True, text=True)
-    #     if pdfPath:
-    #         await update.message.reply_document(document=open(pdfPath, 'rb'))
-    #     else:
-    #         await update.message.reply_text('Errore nella generazione del PDF.')
+    # if pdfPath:
+    #     await update.message.reply_document(document=open(pdfPath, 'rb'))
     # else:
-    #     await update.message.reply_text('Nessuna rilevazione in corso.')
+    #     await update.message.reply_text('Error generating the PDF.')
+    # else:
+    #     await update.message.reply_text('No detection in progress.')
 
-# Funzione valida solo per sistemi windows (test)
+# Function for handling the /stop command (Windows systems - for testing)
 # async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 #     pid = getPID()
 #     if pid:
 #         process = await asyncio.create_subprocess_shell(f"taskkill /PID {pid} /F")
 #         await process.communicate()
-#         await update.message.reply_text('Rilevazione terminata... invio dei dati...')
+#         await update.message.reply_text('Detection stopped... sending data...')
 #     else:
-#         await update.message.reply_text('Nessuna rilevazione in corso.')
+#         await update.message.reply_text('No detection in progress.')
 
 #     data = subprocess.run(["python", "RaspberryCode/temp/readData.py"], capture_output=True, text=True)
 #     if data.stdout.strip():
 #         await update.message.reply_text(data.stdout)
 #     else:
-#         await update.message.reply_text('Nessun dato disponibile.') 
+#         await update.message.reply_text('No data available.') 
 
-# Funzione principale per configurare e avviare il bot
+# Main function to configure and start the bot
 def main():
-    TOKEN = getToken()  # Ottiene il token del bot
+    TOKEN = getToken()  # Get the bot token
 
-    # Configura il logging per il debug e le informazioni
+    # Configure logging for debug and info messages
     logging.basicConfig(
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         level=logging.INFO
     )
 
-    # Crea l'oggetto Application usando il token del bot
+    # Create the Application object using the bot token
     application = Application.builder().token(TOKEN).build()
     application.add_error_handler(error_handler)
 
-    # Aggiunge i gestori di comandi
+    # Add command handlers
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("start_detection", start_detection))
     application.add_handler(CommandHandler("stop_detection", stop))
     application.add_handler(CommandHandler("website", website))
     application.add_handler(CommandHandler("reset", reset))
     application.add_handler(CommandHandler("get_coordinates", coordinates))
-    # Avvia il bot in modalità polling per ricevere messaggi
+
+    # Start the bot in polling mode to receive messages
     application.run_polling()
 
-# Esegui la funzione main se lo script viene eseguito direttamente
+# Execute the main function if the script is run directly
 if __name__ == "__main__":
     main()
