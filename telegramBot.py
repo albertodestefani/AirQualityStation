@@ -130,10 +130,6 @@ def main():
     application.add_handler(CommandHandler("website", website))
     application.add_handler(CommandHandler("reset", reset))
     application.add_handler(CommandHandler("get_coordinates", coordinates))
-
-    # Reset file temporanei
-    reset()
-
     # Avvia il bot in modalità polling per ricevere messaggi
     application.run_polling()
 
