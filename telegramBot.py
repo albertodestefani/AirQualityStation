@@ -72,7 +72,7 @@ async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def coordinates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global latitude, longitude
     await update.message.reply_text("Detecting coordinates")
-    subprocess.Popen(["./RaspberryCode/getCoordinates.sh"])
+    subprocess.run(["./RaspberryCode/getCoordinates.sh"], check=True)
 
     try:
         with open("RaspberryCode/temp/coordinates.txt") as file:
