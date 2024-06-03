@@ -1,6 +1,5 @@
 # Module Imports
 import os
-import requests
 import ST7735
 from bme280 import BME280
 from enviroplus import gas
@@ -13,7 +12,6 @@ import pytz
 import time
 import math as m
 import json
-import asyncio
 from telegram import Bot
 from Noise import Noise
 from gps_test.coordinates import CoordinatesConverter
@@ -110,21 +108,6 @@ def read_values():
 
     return values
 
-def get_token():
-    try:
-        with open('../conn/telegramBot.json', 'r') as json_file:
-            data = json.load(json_file)
-        token = data['token']
-        return token
-    except Exception as e:
-        logging.warning(f"Error loading the token: {e}")
-        exit(1)
-
-# Funzione per inviare un messaggio Telegram
-async def send_telegram_message(token, message):
-    bot = Bot(token)
-    await bot.send_message(text=message)
-
 # Open the JSON file and load the database configuration datas
 def get_connection_data():
     with open('../conn/connection_data.json', 'r') as json_file: #../../conn/connection_data.json
@@ -210,8 +193,6 @@ except ValueError as e:
 
 # Counter 
 i = 0
-# Token
-TOKEN = get_token()
 # Reset the counter in the temp file
 resetCounter()
 
@@ -275,10 +256,6 @@ while True:
     # Close cursor and databese connection for internet saving
     mycursor.close()
     mydb.close()
-
-    message = f"New detection completed at {formatted_date}"
-    asyncio.run(send_telegram_message(TOKEN, message))
-
     # Reload counter
     i = i + 1
     setCounter(i)
