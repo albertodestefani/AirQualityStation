@@ -18,8 +18,6 @@ date_start = now.strftime('%Y-%m-%d %H:%M')
 # Global coordinates variable
 latitude = 0
 longitude = 0
-# Converter object
-converter = CoordinatesConverter()
 
 # Function to get the bot token from a JSON file
 def getToken():
@@ -100,6 +98,7 @@ async def location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(address)
 
 
+
 # Async function to handle the /stop command (Linux-like systems)
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pid = getPID()
@@ -122,9 +121,13 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     else:
         await update.message.reply_text('No detection in progress.')
 
+converter = CoordinatesConverter()  
+
 # Main function to configure and start the bot
 def main():
     TOKEN = getToken()  # Get the bot token
+    # Converter object
+    
 
     # Configure logging for debug and info messages
     logging.basicConfig(
