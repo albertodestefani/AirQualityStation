@@ -17,7 +17,7 @@ if [ -z "$output" ]; then
 fi
 
 # Scrivi l'output nel file coordinates.txt
-echo "$output" > coordinates.txt
+echo "$output" > RaspberryCode/temp/coordinates.txt
 
 # Verifica lo stato di uscita del comando di scrittura su file
 if [ $? -ne 0 ]; then
