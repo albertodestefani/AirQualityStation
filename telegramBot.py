@@ -55,7 +55,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def start_detection(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if getPID() is None:
         await update.message.reply_text('Starting detection... Please wait 30 seconds')
-        subprocess.Popen(["python3", "RaspberryCode/test.py"]) # Start detection asynchronously
+        subprocess.Popen(["python3", "RaspberryCode/main.py"]) # Start detection asynchronously
     else:
         await update.message.reply_text('Detection already in progress...')
 
