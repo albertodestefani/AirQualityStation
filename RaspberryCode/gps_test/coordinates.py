@@ -13,7 +13,6 @@ class CoordinatesConverter:
         pass
 
     def reverse_geocode(self, latitude, longitude):
-        print ("coordinate")
         try:
             url = f"https://nominatim.openstreetmap.org/reverse?lat={latitude}&lon={longitude}&format=json"
             response = requests.get(url)

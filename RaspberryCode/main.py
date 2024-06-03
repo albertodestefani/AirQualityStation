@@ -121,9 +121,9 @@ def get_token():
         exit(1)
 
 # Funzione per inviare un messaggio Telegram
-async def send_telegram_message(token, chat_id, message):
+async def send_telegram_message(token, message):
     bot = Bot(token)
-    await bot.send_message(chat_id=chat_id, text=message)
+    await bot.send_message(text=message)
 
 # Open the JSON file and load the database configuration datas
 def get_connection_data():
