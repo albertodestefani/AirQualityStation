@@ -49,13 +49,13 @@ def getPID():
     
 # Async function to handle the /start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Hello! This bot monitors the AQS station, an air quality detector in the municipality of Vittorio Veneto. \nUse /start_detection to start detection and /stop_detection to stop it.")
+    await update.message.reply_text("Hello! This bot monitors the AQS station, an air quality detector in the municipality of Vittorio Veneto. \nUse /start_detection to start detection and /stop_detection to stop it. \nUse /get_coordinates to read the coordinates and /get_location to convert them into an address.")
 
 # Async function to handle the /start_detection command
 async def start_detection(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if getPID() is None:
         await update.message.reply_text('Starting detection... Please wait 30 seconds')
-        subprocess.Popen(["python3", "RaspberryCode/main.py"]) # Start detection asynchronously
+        subprocess.Popen(["python3", "RaspberryCode/test.py"]) # Start detection asynchronously
     else:
         await update.message.reply_text('Detection already in progress...')
 
@@ -95,7 +95,6 @@ async def coordinates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 async def location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global latitude, longitude, converter
 
-
     converter.reverse_geocode(latitude, longitude)
     address = converter.get_string()
     await update.message.reply_text(address)
@@ -106,7 +105,8 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pid = getPID()
     if pid:
         # Use subprocess to send the termination signal
-        process = await asyncio.create_subprocess_shell(f"kill {pid}")
+        # process = await asyncio.create_subprocess_shell(f"kill {pid}")
+        process = await asyncio.create_subprocess_shell(f"taskkill /PID {pid} /F")
         await process.communicate()
         await update.message.reply_text('Detection stopped... sending data...')
 
@@ -121,22 +121,6 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             await update.message.reply_text('Error generating the PDF.')
     else:
         await update.message.reply_text('No detection in progress.')
-
-# Function for handling the /stop command (Windows systems - for testing)
-# async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     pid = getPID()
-#     if pid:
-#         process = await asyncio.create_subprocess_shell(f"taskkill /PID {pid} /F")
-#         await process.communicate()
-#         await update.message.reply_text('Detection stopped... sending data...')
-#     else:
-#         await update.message.reply_text('No detection in progress.')
-
-#     data = subprocess.run(["python", "RaspberryCode/temp/readData.py"], capture_output=True, text=True)
-#     if data.stdout.strip():
-#         await update.message.reply_text(data.stdout)
-#     else:
-#         await update.message.reply_text('No data available.') 
 
 # Main function to configure and start the bot
 def main():

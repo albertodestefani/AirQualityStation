@@ -8,7 +8,12 @@ import requests
 class CoordinatesConverter:   
     # We use this to have full control over the response
     # Returns a tuple containing essential data
+
+    def __init__(self) -> None:
+        pass
+
     def reverse_geocode(self, latitude, longitude):
+        print ("coordinate")
         try:
             url = f"https://nominatim.openstreetmap.org/reverse?lat={latitude}&lon={longitude}&format=json"
             response = requests.get(url)
@@ -18,7 +23,7 @@ class CoordinatesConverter:
             address = data['address']
 
             # String that can be printed for error checking
-            self.location = data['lat'] + data['lon'] + address['road'] + ', ' + address['town'] + ', ' + address['county'] + ', ' + address['state'] + ', ' + address['country']
+            self.location = address['road'] + ', ' + address['town'] + ', ' + address['county'] + ', ' + address['state'] + ', ' + address['country']
 
             # Create a formatted tuple with selected data to return
             tupla = {
@@ -44,9 +49,9 @@ class CoordinatesConverter:
 
 
 
-# test
-converter = CoordinatesConverter()
-# 45.99755068 12.291252627
-# 45.997566111  12.290824468
-datas = converter.reverse_geocode(45.997486149, 12.291401648)
-print(datas)
+# # test
+# converter = CoordinatesConverter()
+# # 45.99755068 12.291252627
+# # 45.997566111  12.290824468
+# datas = converter.reverse_geocode(45.997486149, 12.291401648)
+# print(datas)
