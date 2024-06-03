@@ -105,8 +105,8 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pid = getPID()
     if pid:
         # Use subprocess to send the termination signal
-        # process = await asyncio.create_subprocess_shell(f"kill {pid}")
-        process = await asyncio.create_subprocess_shell(f"taskkill /PID {pid} /F")
+        process = await asyncio.create_subprocess_shell(f"kill {pid}")
+        # process = await asyncio.create_subprocess_shell(f"taskkill /PID {pid} /F")
         await process.communicate()
         await update.message.reply_text('Detection stopped... sending data...')
 
