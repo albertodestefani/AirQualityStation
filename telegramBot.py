@@ -18,6 +18,8 @@ date_start = now.strftime('%Y-%m-%d %H:%M')
 # Global coordinates variable
 latitude = 0
 longitude = 0
+# Converter object
+converter = CoordinatesConverter()
 
 # Function to get the bot token from a JSON file
 def getToken():
@@ -91,10 +93,10 @@ async def coordinates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 # Async function to handle the /get_location command
 # Used to trasform coordinates into an address
 async def location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    global latitude, longitude
-    converter = CoordinatesConverter(latitude, longitude)
+    global latitude, longitude, converter
 
-    converter.reverse_geocode()
+
+    converter.reverse_geocode(latitude, longitude)
     address = converter.get_string()
     await update.message.reply_text(address)
 
