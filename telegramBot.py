@@ -7,6 +7,7 @@ import pytz
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 from RaspberryCode.readData import ReadData
+from RaspberryCode.gps_test.coordinates import CoordinatesConverter 
 
 # Set the DEBUG variable to enable/disable debug messages
 DEBUG = 1
@@ -14,6 +15,9 @@ printer = ReadData()
 # Get the timezone of our area
 now = datetime.datetime.now(pytz.timezone("Europe/Rome")) 
 date_start = now.strftime('%Y-%m-%d %H:%M')
+# Global coordinates variable
+latitude = 0
+longitude = 0
 
 # Function to get the bot token from a JSON file
 def getToken():
@@ -66,16 +70,34 @@ async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 # Async function to handle the /get_coordinates command
 async def coordinates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    global latitude, longitude
     await update.message.reply_text("Detecting coordinates")
-    subprocess.Popen(['./getCoordinates.sh'])
+    # subprocess.Popen(['./getCoordinates.sh'])
 
     try:
         with open("RaspberryCode/temp/coordinates.txt") as file:
             data = file.read()
-            return data != ''
+
+            if data != '':
+                await update.message.reply_text(data)
+                coordinates = data.split()  # Split the string
+                latitude = float(coordinates[0])
+                longitude = float(coordinates[1])
+            else:
+                await update.message.reply_text("Error! Coordinates not detected... Try again later")
     except FileNotFoundError:
-        print("File not found")
-        return False
+        logging.error("File not found")
+
+# Async function to handle the /get_location command
+# Used to trasform coordinates into an address
+async def location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    global latitude, longitude
+    converter = CoordinatesConverter(latitude, longitude)
+
+    converter.reverse_geocode()
+    address = converter.get_string()
+    await update.message.reply_text(address)
+
 
 # Async function to handle the /stop command (Linux-like systems)
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -86,17 +108,17 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await process.communicate()
         await update.message.reply_text('Detection stopped... sending data...')
 
-    # Uncomment and adjust this section to send a PDF report
-    # date_end = now.strftime('%Y-%m-%d %H:%M')
-    # pdfPath = printer.getPDF(date_start, date_end)
-    # print("PDF path: ", pdfPath)
+        # Uncomment and adjust this section to send a PDF report
+        date_end = now.strftime('%Y-%m-%d %H:%M')
+        pdfPath = printer.getPDF(date_start, date_end)
+        print("PDF path: ", pdfPath)
 
-    # if pdfPath:
-    #     await update.message.reply_document(document=open(pdfPath, 'rb'))
-    # else:
-    #     await update.message.reply_text('Error generating the PDF.')
-    # else:
-    #     await update.message.reply_text('No detection in progress.')
+        if pdfPath:
+            await update.message.reply_document(document=open(pdfPath, 'rb'))
+        else:
+            await update.message.reply_text('Error generating the PDF.')
+    else:
+        await update.message.reply_text('No detection in progress.')
 
 # Function for handling the /stop command (Windows systems - for testing)
 # async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -135,6 +157,7 @@ def main():
     application.add_handler(CommandHandler("website", website))
     application.add_handler(CommandHandler("reset", reset))
     application.add_handler(CommandHandler("get_coordinates", coordinates))
+    application.add_handler(CommandHandler("get_location", location))
 
     # Start the bot in polling mode to receive messages
     application.run_polling()
