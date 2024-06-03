@@ -13,6 +13,8 @@ import pytz
 import time
 import math as m
 import json
+import asyncio
+from telegram import Bot
 from Noise import Noise
 from gps_test.coordinates import CoordinatesConverter
 from db_location import DB_Location
@@ -108,6 +110,21 @@ def read_values():
 
     return values
 
+def get_token():
+    try:
+        with open('../conn/telegramBot.json', 'r') as json_file:
+            data = json.load(json_file)
+        token = data['token']
+        return token
+    except Exception as e:
+        logging.warning(f"Error loading the token: {e}")
+        exit(1)
+
+# Funzione per inviare un messaggio Telegram
+async def send_telegram_message(token, chat_id, message):
+    bot = Bot(token)
+    await bot.send_message(chat_id=chat_id, text=message)
+
 # Open the JSON file and load the database configuration datas
 def get_connection_data():
     with open('../conn/connection_data.json', 'r') as json_file: #../../conn/connection_data.json
@@ -193,6 +210,8 @@ except ValueError as e:
 
 # Counter 
 i = 0
+# Token
+TOKEN = get_token()
 # Reset the counter in the temp file
 resetCounter()
 
@@ -249,15 +268,20 @@ while True:
         #Confirm the changes in the database are made correctly
         mydb.commit()
         logging.info("Query done")
-        # Reload counter
-        i = i + 1
-        setCounter(i)
+        
     except Exception as e:
         logging.warning('Main Loop Exception: {}'.format(e))   
 
     # Close cursor and databese connection for internet saving
     mycursor.close()
     mydb.close()
+
+    message = f"New detection completed at {formatted_date}"
+    asyncio.run(send_telegram_message(TOKEN, message))
+
+    # Reload counter
+    i = i + 1
+    setCounter(i)
 
     # Wait the time for the next detection
     time.sleep(30)

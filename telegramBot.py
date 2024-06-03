@@ -106,8 +106,8 @@ async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if pid:
         # Use subprocess to send the termination signal
         process = await asyncio.create_subprocess_shell(f"kill {pid}")
-        # process = await asyncio.create_subprocess_shell(f"taskkill /PID {pid} /F")
         await process.communicate()
+        # process = await asyncio.create_subprocess_shell(f"taskkill /PID {pid} /F")
         await update.message.reply_text('Detection stopped... sending data...')
 
         # Uncomment and adjust this section to send a PDF report
@@ -148,6 +148,7 @@ def main():
     # Start the bot in polling mode to receive messages
     application.run_polling()
 
+    
 # Execute the main function if the script is run directly
 if __name__ == "__main__":
     main()
