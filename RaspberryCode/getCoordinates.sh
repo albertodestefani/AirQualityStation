@@ -1,5 +1,5 @@
-# Rilevazione delle coordinate e scrittura su file temporaneo
 #!/bin/bash
+# Rilevazione delle coordinate e scrittura su file temporaneo
 
 # Esegui il comando gpspipe e cattura l'output
 output=$(gpspipe -w -n 10 | grep -m 1 -oP '"lat":\K[-\d.]+|(?<="lon":)[-\d.]+' | tr '\n' ' ')
