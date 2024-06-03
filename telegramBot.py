@@ -18,8 +18,6 @@ date_start = now.strftime('%Y-%m-%d %H:%M')
 # Global coordinates variable
 latitude = 0
 longitude = 0
-# chat id
-CHAT_ID = 0
 
 # Function to get the bot token from a JSON file
 def getToken():
@@ -74,7 +72,7 @@ async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def coordinates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     global latitude, longitude
     await update.message.reply_text("Detecting coordinates")
-    # subprocess.Popen(['./getCoordinates.sh'])
+    subprocess.Popen(['RaspberryCode/getCoordinates.sh'])
 
     try:
         with open("RaspberryCode/temp/coordinates.txt") as file:
