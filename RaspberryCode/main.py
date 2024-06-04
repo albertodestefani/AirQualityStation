@@ -231,7 +231,7 @@ while True:
         logging.info("Reading values")
 
         # Get the location id
-        values['id'] = int(db_location.getId(location) )
+        idLocation = int(db_location.getId(location) )
 
         # Get the timezone of our area
         now = datetime.datetime.now(pytz.timezone("Europe/Rome"))
@@ -243,7 +243,7 @@ while True:
         logging.info(values)    
         # Create the query for the database 
         sql = "INSERT INTO readings (date_time, pm1, pm25, pm10, temperature, humidity, air_pressure, no2, co, nh3, dBA, id_location) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (values['date'], values['PM1'], values['PM25'], values['PM10'], values['temperature'], values['humidity'], values['air_pressure'], values['Oxidising'], values['Reducing'], values['NH3'], values['dBA'], values['id'])
+        val = (values['date'], values['PM1'], values['PM25'], values['PM10'], values['temperature'], values['humidity'], values['air_pressure'], values['Oxidising'], values['Reducing'], values['NH3'], values['dBA'], idLocation)
         # Execute the SQL query
         mycursor.execute(sql, val)
         #Confirm the changes in the database are made correctly

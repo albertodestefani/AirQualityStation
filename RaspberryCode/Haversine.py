@@ -31,4 +31,4 @@ class HaversineCalculator:
         return (distance <= radius)
 
 # Example usage
-haversine_calculator = HaversineCalculator()
+# haversine_calculator = HaversineCalculator()
