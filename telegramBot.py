@@ -3,6 +3,7 @@ import logging
 import subprocess
 import asyncio
 import datetime
+import time
 import pytz
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
@@ -73,6 +74,7 @@ async def coordinates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     global latitude, longitude
     await update.message.reply_text("Detecting coordinates")
     subprocess.run(["./RaspberryCode/getCoordinates.sh"], check=True)
+    time.sleep(10)
 
     try:
         with open("RaspberryCode/temp/coordinates.txt") as file:

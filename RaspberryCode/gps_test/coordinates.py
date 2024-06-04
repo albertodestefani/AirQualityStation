@@ -16,7 +16,7 @@ class CoordinatesConverter:
         try:
             url = f"https://nominatim.openstreetmap.org/reverse?lat={latitude}&lon={longitude}&format=json"
             response = requests.get(url)
-            response.raise_for_status()  # Check for HTTP errors
+            # response.raise_for_status()  # Check for HTTP errors
             data = response.json()
             
             address = data['address']
