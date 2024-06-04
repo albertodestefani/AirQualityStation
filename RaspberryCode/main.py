@@ -251,7 +251,7 @@ while True:
         logging.info("Query done")
         
     except Exception as e:
-        logging.warning('Main Loop Exception: {}'.format(e))   
+        logging.exception('Main Loop Exception: {}'.format(e))   
 
     # Close cursor and databese connection for internet saving
     mycursor.close()
