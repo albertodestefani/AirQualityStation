@@ -19,6 +19,8 @@ date_start = now.strftime('%Y-%m-%d %H:%M')
 # Global coordinates variable
 latitude = 0
 longitude = 0
+# coordinates set
+setCoordinates = False
 
 # Function to get the bot token from a JSON file
 def getToken():
@@ -67,11 +69,11 @@ async def reset(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Resetting temporary files")
     subprocess.run(['truncate', '-s', '0', 'RaspberryCode/temp/numberOfReadings.txt'])
     subprocess.run(['truncate', '-s', '0', 'RaspberryCode/temp/pid.txt'])
-    # subprocess.run(['truncate', '-s', '0', 'RaspberryCode/temp/coordinates.txt'])
+    subprocess.run(['truncate', '-s', '0', 'RaspberryCode/temp/coordinates.txt'])
 
 # Async function to handle the /get_coordinates command
 async def coordinates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    global latitude, longitude
+    global latitude, longitude, setCoordinates
     await update.message.reply_text("Detecting coordinates")
     subprocess.run(["./RaspberryCode/getCoordinates.sh"], check=True)
     time.sleep(10)
@@ -85,6 +87,7 @@ async def coordinates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 coordinates = data.split()  # Split the string
                 latitude = float(coordinates[0])
                 longitude = float(coordinates[1])
+                setCoordinates = True
             else:
                 await update.message.reply_text("Error! Coordinates not detected... Try again later")
     except FileNotFoundError:
@@ -93,11 +96,15 @@ async def coordinates(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 # Async function to handle the /get_location command
 # Used to trasform coordinates into an address
 async def location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    global latitude, longitude, converter
+    global latitude, longitude, converter, setCoordinates
 
-    converter.reverse_geocode(latitude, longitude)
-    address = converter.get_string()
-    await update.message.reply_text(address)
+    if setCoordinates:
+        converter.reverse_geocode(latitude, longitude)
+        address = converter.get_string()
+        await update.message.reply_text(address)
+    else:
+        await update.message.reply_text("It seems like you are asking for coordinates that have not yet been retrieved. Please use the /get_coordinates command to retrieve them.")
+
 
 # Async function to handle the /stop command (Linux-like systems)
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
