@@ -32,7 +32,7 @@ import logging
 #format for the message that you see when a detection is made
 logging.basicConfig(
     format='%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s',
-    level=logging.INFO,
+    level=logging.DEBUG,
     datefmt='%Y-%m-%d %H:%M:%S')
 
 # Create I2C canal connection
