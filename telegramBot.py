@@ -105,7 +105,6 @@ async def location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     else:
         await update.message.reply_text("It seems like you are asking for coordinates that have not yet been retrieved. Please use the /get_coordinates command to retrieve them.")
 
-
 # Async function to handle the /stop command (Linux-like systems)
 async def stop(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pid = getPID()

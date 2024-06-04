@@ -10,6 +10,7 @@ class CoordinatesConverter:
     # Returns a tuple containing essential data
 
     def __init__(self) -> None:
+        self.location = None
         pass
 
     def reverse_geocode(self, latitude, longitude):
@@ -18,7 +19,8 @@ class CoordinatesConverter:
             response = requests.get(url)
             # response.raise_for_status()  # Check for HTTP errors
             data = response.json()
-            
+            print(data)
+
             address = data['address']
 
             # String that can be printed for error checking
